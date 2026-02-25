@@ -9,15 +9,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <style>
-        /* Exact font match for thermal printers - raw system monospace */
+        /* Exact font match for thermal printers */
         body { font-family: 'Courier New', Courier, monospace; }
         
         #receipt-container {
             box-sizing: border-box; 
             background: #fff;
-            width: 320px; 
-            /* 18px padding on left and right guarantees perfect centering in the PDF */
-            padding: 20px 25px; 
+            /* Reduced width to guarantee it scales perfectly into the center of the PDF */
+            width: 280px; 
+            padding: 10px; 
             font-size: 13px;
             line-height: 1.25; 
             color: #000;
@@ -33,9 +33,9 @@
 
         .center-text { text-align: center; }
         
-        /* Dashed line matching the photo exactly */
-        .dashed-line {
-            letter-spacing: 2px; 
+        /* Dotted line matching the photo exactly */
+        .dots-line {
+            letter-spacing: 3px; 
             overflow: hidden;
             white-space: nowrap;
             width: 100%;
@@ -53,8 +53,7 @@
         .total-ttc-row span {
             font-family: Arial, Helvetica, sans-serif; 
             font-size: 16px;
-            /* 700 is exactly bold (stronger than before, but not too fat) */
-            font-weight: 500; 
+            font-weight: 800; /* Bolder as requested */
             transform: scale(1, 1.35); 
             display: inline-block;
         }
@@ -126,13 +125,13 @@
             <div>Lieu départ:</div>
             
             <div style="height: 15px;"></div>
-            <div class="dashed-line">- - - - - - - - - - - - - - - - -</div>
+            <div class="dots-line">................................</div>
             <div style="height: 15px;"></div>
             
             <div>Lieu arrivée:</div>
             
             <div style="height: 15px;"></div>
-            <div class="dashed-line">- - - - - - - - - - - - - - - - -</div>
+            <div class="dots-line">................................</div>
             <div style="height: 15px;"></div>
             
             <div class="flex-row"><span>Prise en charge</span><span>2.94 €</span></div>
@@ -162,13 +161,13 @@
             
             <div>Nom client:</div>
             <div style="height: 15px;"></div>
-            <div class="dashed-line">- - - - - - - - - - - - - - - - -</div>
+            <div class="dots-line">................................</div>
             
             <div style="height: 15px;"></div>
             
             <div>Adresse client:</div>
             <div style="height: 15px;"></div>
-            <div class="dashed-line">- - - - - - - - - - - - - - - - -</div>
+            <div class="dots-line">................................</div>
             
             <div style="height: 15px;"></div>
             
@@ -214,8 +213,9 @@
         element.style.boxShadow = "none";
 
         const opt = {
-            // Margin left/right set to 0. The CSS padding handles the centering perfectly now.
-            margin:       [10, 0, 10, 0], 
+            // [Top, Right, Bottom, Left] in millimeters
+            // This guarantees exactly 6mm of blank space on both sides!
+            margin:       [10, 6, 10, 6], 
             filename:     `Ticket_${dateStr.replace(/\//g, "-")}.pdf`,
             image:        { type: 'jpeg', quality: 1 },
             html2canvas:  { scale: 4, useCORS: true }, 
