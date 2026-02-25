@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Générateur Ticket Taxi</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+body{font-family:'Source Code Pro', monospace}
+#preview{
+white-space:pre-wrap;
+background:#f5f5f5;
+border:1px solid #ddd;
+max-width:320px;
+font-size:12px;
+padding:10px;
+}
+</style>
+</head>
+
+<body class="bg-gray-100 flex justify-center items-center min-h-screen p-4">
+
+<div class="bg-white p-6 rounded-xl shadow grid grid-cols-1 md:grid-cols-2 gap-6">
+
+<div>
+<h2 class="text-xl font-bold mb-3">Ticket Taxi Paris</h2>
+
+<label>Prix course</label>
+<input id="price" type="number" value="20" class="border p-2 w-full mb-2">
+
+<label>Supplément</label>
+<select id="supp" class="border p-2 w-full mb-2">
+<option value="4" data-text="Appel immédiat">Appel immédiat</option>
+<option value="7" data-text="Appel réservé">Appel réservé</option>
+</select>
+
+<label>Début</label>
+<input id="start" type="datetime-local" class="border p-2 w-full mb-2">
+
+<label>Fin</label>
+<input id="end" type="datetime-local" class="border p-2 w-full mb-3">
+
+<button onclick="generate()" class="bg-black text-white w-full p-3 rounded">
+Télécharger PDF
+</button>
+</div>
+
+<div>
+<h3 class="font-bold mb-2">Aperçu</h3>
+<div id="preview"></div>
+</div>
+
+</div>
+
+<script>
+const {jsPDF}=window.jspdf
+
+function format(d){
+const date=new Date(d)
+return date.toLocaleString("fr-FR",{hour12:false})
+}
+
+function updatePreview(){
+const price=parseFloat(priceInput.value)||0
+const supp=parseFloat(suppSelect.value)||0
+const text=suppSelect.options[suppSelect.selectedIndex].dataset.text
+const start=startInput.value
+const end=endInput.value
+const total=price+supp
+const vat=(total/1.1)*0.1
+
+preview.innerText=`
+TICKET CHAUFFEUR
+TAXI AZZOUZI
+TEL: 06 59 10 28 52
+STAT: PARIS N°2033
+IMMAT: EY-370-ZG
+
+${format(end)}
+
+DEBUT: ${format(start)}
+FIN  : ${format(end)}
+
+PRIX COURSE € ${price.toFixed(2)}
+SUPPLEMENT ${text} ${supp.toFixed(2)}
+
+A PAYER TTC € ${total.toFixed(2)}
+DONT TVA 10% ${vat.toFixed(2)}
+`
+}
+
+function generate(){
+updatePreview()
+
+const price=parseFloat(priceInput.value)||0
+const supp=parseFloat(suppSelect.value)||0
+const text=suppSelect.options[suppSelect.selectedIndex].dataset.text
+const start=startInput.value
+const end=endInput.value
+const total=price+supp
+const vat=(total/1.1)*0.1
+
+const doc=new jsPDF({unit:"mm",format:[58,220]})
+doc.setFont("Courier")
+
+let y=10
+function line(t){doc.text(t,4,y);y+=4}
+
+line("TICKET CHAUFFEUR")
+line("TAXI AZZOUZI")
+y+=2
+line("TEL: 06 59 10 28 52")
+line("STAT: PARIS N°2033")
+line("IMMAT: EY-370-ZG")
+y+=4
+line(format(end))
+y+=4
+line("DEBUT: "+format(start))
+line("FIN: "+format(end))
+y+=4
+line("PRIX COURSE € "+price.toFixed(2))
+line("SUPPLEMENT "+text+" "+supp.toFixed(2))
+y+=4
+line("A PAYER TTC € "+total.toFixed(2))
+line("DONT TVA 10% "+vat.toFixed(2))
+y+=4
+
+doc.setFontSize(6)
+doc.text(doc.splitTextToSize(
+"Quel que soit le montant des suppléments inclus, la somme perçue par le chauffeur est celle indiquée ci-dessus.",50),4,y)
+y+=10
+
+doc.text(doc.splitTextToSize(
+"Pour information, le prix inclut une prise en charge de 3.00€ (Tarif A:1.25€/km et 38.85€/h, Tarif B:1.64€/km et 51.79€/h, Tarif C:1.74€/km et 42.52€/h).",50),4,y)
+y+=12
+
+doc.text(doc.splitTextToSize(
+"En cas de contestation, écrire à: Préfecture de police, DUPA – Bureau taxis, 36 rue des Morillons TSA 31691 – 75732 PARIS CEDEX 15.",50),4,y)
+
+doc.save("ticket.pdf")
+}
+
+const priceInput=document.getElementById("price")
+const suppSelect=document.getElementById("supp")
+const startInput=document.getElementById("start")
+const endInput=document.getElementById("end")
+const preview=document.getElementById("preview")
+
+document.querySelectorAll("input,select").forEach(e=>e.oninput=updatePreview)
+</script>
+
+</body>
+</html>
