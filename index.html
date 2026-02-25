@@ -15,8 +15,9 @@
         #receipt-container {
             box-sizing: border-box; 
             background: #fff;
-            width: 300px; /* REDUCED from 320px to prevent the right-side cutoff */
-            padding: 15px; /* Slightly reduced padding to match the new width */
+            width: 320px; 
+            /* 18px padding on left and right guarantees perfect centering in the PDF */
+            padding: 20px 18px; 
             font-size: 13px;
             line-height: 1.25; 
             color: #000;
@@ -38,10 +39,10 @@
             overflow: hidden;
             white-space: nowrap;
             width: 100%;
-            display: block; /* Added to ensure it doesn't break layout width */
+            display: block;
         }
 
-        /* The TOTAL TTC font style - imitating double-height thermal print */
+        /* The TOTAL TTC font style */
         .total-ttc-row {
             display: flex;
             justify-content: space-between;
@@ -52,8 +53,9 @@
         .total-ttc-row span {
             font-family: Arial, Helvetica, sans-serif; 
             font-size: 16px;
-            font-weight: 600; 
-            transform: scale(1, 1.3); 
+            /* 700 is exactly bold (stronger than before, but not too fat) */
+            font-weight: 700; 
+            transform: scale(1, 1.35); 
             display: inline-block;
         }
         
@@ -208,14 +210,12 @@
         const dateStr = formatDateFR(document.getElementById("date").value);
         const element = document.getElementById('receipt-container');
         
-        // Temporarily remove border and shadow for PDF export
         element.style.border = "none";
         element.style.boxShadow = "none";
 
         const opt = {
-            // [Top, Right, Bottom, Left]
-            // Reduced left/right margins to 2mm so the PDF captures the full width
-            margin:       [10, 2, 10, 2], 
+            // Margin left/right set to 0. The CSS padding handles the centering perfectly now.
+            margin:       [10, 0, 10, 0], 
             filename:     `Ticket_${dateStr.replace(/\//g, "-")}.pdf`,
             image:        { type: 'jpeg', quality: 1 },
             html2canvas:  { scale: 4, useCORS: true }, 
@@ -223,16 +223,12 @@
         };
 
         html2pdf().set(opt).from(element).save().then(() => {
-            // Restore styling
             element.style.border = "1px dashed #ccc";
             element.style.boxShadow = "0 4px 6px rgba(0,0,0,0.1)";
         });
     }
 
-    // Attach event listeners to input fields to update preview in real-time
     document.querySelectorAll("input").forEach(e => e.addEventListener("input", updatePreview));
-    
-    // Initial preview render
     window.onload = updatePreview;
 </script>
 
