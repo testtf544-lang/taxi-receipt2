@@ -13,12 +13,12 @@
         body { font-family: 'Courier New', Courier, monospace; }
         
         #receipt-container {
-            box-sizing: border-box; /* Ensures padding doesn't push text outside */
+            box-sizing: border-box; 
             background: #fff;
-            width: 320px; 
-            padding: 20px;
+            width: 300px; /* REDUCED from 320px to prevent the right-side cutoff */
+            padding: 15px; /* Slightly reduced padding to match the new width */
             font-size: 13px;
-            line-height: 1.25; /* Tight line height */
+            line-height: 1.25; 
             color: #000;
             margin: 0 auto;
             border: 1px dashed #ccc;
@@ -34,10 +34,11 @@
         
         /* Dashed line matching the photo exactly */
         .dashed-line {
-            letter-spacing: 2px; /* Spaces out the dashes */
+            letter-spacing: 2px; 
             overflow: hidden;
             white-space: nowrap;
             width: 100%;
+            display: block; /* Added to ensure it doesn't break layout width */
         }
 
         /* The TOTAL TTC font style - imitating double-height thermal print */
@@ -45,18 +46,17 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin: 15px 0 10px 0; /* Space around total */
+            margin: 15px 0 10px 0; 
         }
         
         .total-ttc-row span {
             font-family: Arial, Helvetica, sans-serif; 
             font-size: 16px;
-            font-weight: 600; /* Less bold than before */
-            transform: scale(1, 1.3); /* Slightly less vertical stretch */
+            font-weight: 600; 
+            transform: scale(1, 1.3); 
             display: inline-block;
         }
         
-        /* Keep transform anchor points clean so it aligns perfectly with margins */
         .total-ttc-row span:first-child { transform-origin: left center; }
         .total-ttc-row span:last-child { transform-origin: right center; }
 
@@ -213,9 +213,9 @@
         element.style.boxShadow = "none";
 
         const opt = {
-            // Updated margin: [Top, Right, Bottom, Left] in mm
-            // Adding 4mm to left and right so the text doesn't touch the edges
-            margin:       [10, 4, 10, 4], 
+            // [Top, Right, Bottom, Left]
+            // Reduced left/right margins to 2mm so the PDF captures the full width
+            margin:       [10, 2, 10, 2], 
             filename:     `Ticket_${dateStr.replace(/\//g, "-")}.pdf`,
             image:        { type: 'jpeg', quality: 1 },
             html2canvas:  { scale: 4, useCORS: true }, 
