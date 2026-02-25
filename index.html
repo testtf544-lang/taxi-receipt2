@@ -15,7 +15,7 @@
             white-space: pre-wrap;
             background: #fff;
             border: 1px dashed #ccc;
-            max-width: 400px; /* Widened the preview box */
+            max-width: 400px;
             font-size: 14px;
             padding: 25px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
@@ -80,7 +80,7 @@
         return `${day}/${month}/${year}`;
     }
 
-    function padLR(left, right, width = 38) { // Increased width for the preview
+    function padLR(left, right, width = 38) {
         const spaces = width - left.length - right.length;
         return left + " ".repeat(Math.max(1, spaces)) + right;
     }
@@ -147,75 +147,101 @@
         const tva = ttc - ht;
         const priseEnCharge = 2.94;
 
-        // UPDATED: Increased width to 80mm and height to 260mm for more space
         const doc = new jsPDF({ unit: "mm", format: [80, 260] });
         doc.setFont("Courier");
-        doc.setFontSize(10); // Slightly larger font size for the wider paper
+        doc.setFontSize(10); 
         
-        let y = 12; // Start a bit lower from the top edge
-        const leftX = 6;  // Wider left margin
-        const rightX = 74; // Wider right margin
-        const centerX = 40; // True center of 80mm
+        let y = 15; 
+        const leftX = 5;  
+        const rightX = 75; 
+        const centerX = 40; 
 
-        // Helper functions with increased line spacing (y += 5 instead of 4)
-        function line(text, x = leftX) { doc.text(text, x, y); y += 5; }
-        function lineCenter(text) { doc.text(text, centerX, y, { align: "center" }); y += 5; }
-        function lineRight(text) { doc.text(text, rightX, y, { align: "right" }); }
+        // CORRECTED HELPER FUNCTIONS
+        // This ensures the right-aligned text prints on the SAME line as the left text
+        function printRow(leftText, rightText) {
+            doc.text(leftText, leftX, y);
+            doc.text(rightText, rightX, y, { align: "right" });
+            y += 5; // Move down ONLY after both sides are printed
+        }
 
-        // En-tête
-        lineCenter("TAXI");
-        lineCenter("ELIDRISSI HICHAM");
+        function printCenter(text) {
+            doc.text(text, centerX, y, { align: "center" });
+            y += 5;
+        }
+
+        function printLeft(text) {
+            doc.text(text, leftX, y);
+            y += 5;
+        }
+
+        function printDots() {
+            printLeft("...................................");
+        }
+
+        // --- DÉBUT DU TICKET PDF ---
+
+        printCenter("TAXI");
+        printCenter("ELIDRISSI HICHAM");
         y += 4;
 
-        // Info Véhicule
-        line("N° Stat.:"); lineRight("1"); y += 5;
-        line("N° Immat.:"); lineRight("FK-309-AA"); y += 5;
-        line("Commune de rattachement:");
-        lineCenter("MANTES LA JOLIE");
+        printRow("N° Stat.:", "1");
+        printRow("N° Immat.:", "FK-309-AA");
+        printLeft("Commune de rattachement:");
+        printCenter("MANTES LA JOLIE");
         y += 4;
 
-        // Info Trajet
-        line("Date:"); lineRight(dateStr); y += 5;
-        line(`Départ:${start}`); lineRight(`Arrivée:${end}`); y += 5;
-        line("Distance:"); lineRight(`${dist} km`); y += 5;
+        printRow("Date:", dateStr);
+        printRow(`Départ:${start}`, `Arrivée:${end}`);
+        printRow("Distance:", `${dist} km`);
         
         y += 2;
-        line("Lieu départ:"); y += 3;
-        line(".................................."); y += 3;
-        line("Lieu arrivée:"); y += 3;
-        line(".................................."); y += 4;
+        printLeft("Lieu départ:");
+        y += 1;
+        printDots();
+        y += 2;
+        printLeft("Lieu arrivée:");
+        y += 1;
+        printDots();
+        y += 4;
 
-        // Prix
-        line("Prise en charge"); lineRight(`${priseEnCharge.toFixed(2)} €`); y += 8;
+        printRow("Prise en charge", `${priseEnCharge.toFixed(2)} €`);
+        y += 6;
         
         doc.setFont("Courier", "bold");
-        line("TOTAL TTC"); lineRight(`${ttc.toFixed(2)} €`); y += 5;
+        printRow("TOTAL TTC", `${ttc.toFixed(2)} €`);
         doc.setFont("Courier", "normal");
         
-        line("Total TVA 10.00%"); lineRight(`${tva.toFixed(2)} €`); y += 5;
-        line("Total HT"); lineRight(`${ht.toFixed(2)} €`); y += 8;
+        printRow("Total TVA 10.00%", `${tva.toFixed(2)} €`);
+        printRow("Total HT", `${ht.toFixed(2)} €`);
+        y += 6;
 
-        // Mentions légales (Wrapped wider)
+        // Legal text logic fixed for cleaner wrapping
         doc.setFontSize(9);
-        doc.text(doc.splitTextToSize("Le tarif minimum, suppl. inclus, susceptible d'être perçu pour une course est fixé à 8.00 €", 68), leftX, y);
-        y += 16;
+        const legalText = "Le tarif minimum, suppl. inclus, susceptible d'être perçu pour une course est fixé à 8.00 €";
+        const splitLegalText = doc.splitTextToSize(legalText, 70);
+        doc.text(splitLegalText, leftX, y);
+        y += (splitLegalText.length * 4) + 6;
 
-        line("Adresse de réclamation:");
-        doc.text(doc.splitTextToSize("Prefecture des Yvelines Bureau de la reglementation General 1rue jean Houdon 78010 Versailles Cedex", 60), centerX, y, { align: "center" });
-        y += 20;
+        printLeft("Adresse de réclamation:");
+        // Properly center-aligned block of text
+        const addressText = "Prefecture des Yvelines\nBureau de la reglementation\nGeneral 1rue jean\nHoudon 78010 Versailles\nCedex";
+        doc.text(addressText, centerX, y, { align: "center" });
+        y += 24; 
 
-        // Signatures
         doc.setFontSize(10);
-        line("Nom client:"); y += 3;
-        line(".................................."); y += 4;
-        line("Adresse client:"); y += 3;
-        line(".................................."); y += 4;
-        line("Signature client:");
+        printLeft("Nom client:");
+        y += 1;
+        printDots();
+        y += 2;
+        printLeft("Adresse client:");
+        y += 1;
+        printDots();
+        y += 2;
+        printLeft("Signature client:");
         
         y += 18;
-        lineCenter("Exemplaire chauffeur");
+        printCenter("Exemplaire chauffeur");
 
-        // Téléchargement
         doc.save(`Ticket_${dateStr.replace(/\//g, "-")}.pdf`);
     }
 
