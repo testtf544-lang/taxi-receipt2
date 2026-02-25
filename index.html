@@ -12,10 +12,9 @@
     <style>
         body { font-family: 'Roboto Mono', monospace; }
         
-        /* The exact styling for the receipt */
         #receipt-container {
             background: #fff;
-            width: 320px; /* Standard 80mm receipt width in pixels */
+            width: 320px; 
             padding: 20px;
             font-size: 13px;
             line-height: 1.4;
@@ -93,17 +92,20 @@
 
             <div class="flex-row"><span>Date:</span><span id="r-date">23/02/2026</span></div>
             <div class="flex-row"><span>Départ:<span id="r-start">12:54</span></span><span>Arrivée:<span id="r-end">13:52</span></span></div>
+            
             <div class="flex-row"><span>Distance:</span><span id="r-dist">64.8 km</span></div>
-            
-            <div class="spacer"></div>
             <div>Lieu départ:</div>
-            <div class="dots">............................</div>
             
             <div class="spacer"></div>
+            <div class="dots">............................</div>
+            <div class="spacer"></div>
+            
             <div>Lieu arrivée:</div>
-            <div class="dots">............................</div>
             
             <div class="spacer"></div>
+            <div class="dots">............................</div>
+            <div class="spacer"></div>
+            
             <div class="flex-row"><span>Prise en charge</span><span>2.94 €</span></div>
             
             <div class="spacer"></div>
@@ -124,9 +126,11 @@
             <div class="spacer"></div>
             
             <div>Nom client:</div>
+            <div class="spacer"></div>
             <div class="dots">............................</div>
             <div class="spacer"></div>
             <div>Adresse client:</div>
+            <div class="spacer"></div>
             <div class="dots">............................</div>
             <div class="spacer"></div>
             <div>Signature client:</div>
@@ -149,7 +153,6 @@
     }
 
     function updatePreview() {
-        // Update DOM elements instead of generating plain text
         document.getElementById("r-date").innerText = formatDateFR(document.getElementById("date").value);
         document.getElementById("r-start").innerText = document.getElementById("start").value;
         document.getElementById("r-end").innerText = document.getElementById("end").value;
@@ -170,21 +173,18 @@
         const dateStr = formatDateFR(document.getElementById("date").value);
         const element = document.getElementById('receipt-container');
         
-        // Temporarily remove the border/shadow for the PDF generation
         element.style.border = "none";
         element.style.boxShadow = "none";
 
         const opt = {
-            margin:       [10, 0, 10, 0], // Top, Right, Bottom, Left margins
+            margin:       [10, 0, 10, 0], 
             filename:     `Ticket_${dateStr.replace(/\//g, "-")}.pdf`,
             image:        { type: 'jpeg', quality: 1 },
-            html2canvas:  { scale: 3, useCORS: true }, // High scale for crisp text
+            html2canvas:  { scale: 3, useCORS: true }, 
             jsPDF:        { unit: 'mm', format: [80, 260], orientation: 'portrait' }
         };
 
-        // Generate the PDF
         html2pdf().set(opt).from(element).save().then(() => {
-            // Restore border/shadow after download
             element.style.border = "1px dashed #ccc";
             element.style.boxShadow = "0 4px 6px rgba(0,0,0,0.1)";
         });
