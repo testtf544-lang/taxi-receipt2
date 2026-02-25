@@ -17,7 +17,7 @@
             width: 320px; 
             padding: 20px;
             font-size: 13px;
-            line-height: 1.4;
+            line-height: 1.3; /* Tighter line height to mimic the printer */
             color: #000;
             margin: 0 auto;
             border: 1px dashed #ccc;
@@ -31,7 +31,6 @@
 
         .center-text { text-align: center; }
         .bold { font-weight: 700; }
-        .spacer { height: 12px; }
         .dots { letter-spacing: 2px; }
     </style>
 </head>
@@ -81,63 +80,60 @@
         <div id="receipt-container">
             <div class="center-text">TAXI<br>ELIDRISSI HICHAM</div>
             
-            <div class="spacer"></div>
+            <div style="height: 12px;"></div>
 
             <div class="flex-row"><span>N° Stat.:</span><span>1</span></div>
             <div class="flex-row"><span>N° Immat.:</span><span>FK-309-AA</span></div>
             <div>Commune de rattachement:</div>
             <div class="center-text">MANTES LA JOLIE</div>
 
-            <div class="spacer"></div>
+            <div style="height: 12px;"></div>
 
             <div class="flex-row"><span>Date:</span><span id="r-date">23/02/2026</span></div>
             <div class="flex-row"><span>Départ:<span id="r-start">12:54</span></span><span>Arrivée:<span id="r-end">13:52</span></span></div>
             
-            <div class="flex-row"><span>Distance:</span><span id="r-dist">64.8 km</span></div>
+            <div class="flex-row" style="margin-bottom: 2px;"><span>Distance:</span><span id="r-dist">64.8 km</span></div>
             <div>Lieu départ:</div>
             
-            <div class="spacer"></div>
+            <div style="height: 15px;"></div>
             <div class="dots">............................</div>
-            <div class="spacer"></div>
             
-            <div>Lieu arrivée:</div>
+            <div style="margin-top: 5px;">Lieu arrivée:</div>
             
-            <div class="spacer"></div>
+            <div style="height: 15px;"></div>
             <div class="dots">............................</div>
-            <div class="spacer"></div>
-            
+            <div style="height: 15px;"></div>
             <div class="flex-row"><span>Prise en charge</span><span>2.94 €</span></div>
             
-            <div class="spacer"></div>
+            <div style="height: 12px;"></div>
             <div class="flex-row bold" style="font-size: 15px;"><span>TOTAL TTC</span><span id="r-ttc">135.24 €</span></div>
             <div class="flex-row"><span>Total TVA 10.00%</span><span id="r-tva">12.29 €</span></div>
             <div class="flex-row"><span>Total HT</span><span id="r-ht">122.95 €</span></div>
             
-            <div class="spacer"></div>
-            <div class="spacer"></div>
+            <div style="height: 24px;"></div>
             
             <div>Le tarif minimum, suppl.<br>inclus, susceptible d'être<br>perçu pour une course est<br>fixé à 8.00 €</div>
             
-            <div class="spacer"></div>
+            <div style="height: 12px;"></div>
             
             <div>Adresse de réclamation:</div>
             <div class="center-text">Prefecture des Yvelines<br>Bureau de la reglementation<br>General 1rue jean<br>Houdon 78010 Versailles<br>Cedex</div>
             
-            <div class="spacer"></div>
+            <div style="height: 12px;"></div>
             
             <div>Nom client:</div>
-            <div class="spacer"></div>
+            <div style="height: 15px;"></div>
             <div class="dots">............................</div>
-            <div class="spacer"></div>
+            
+            <div style="height: 8px;"></div>
             <div>Adresse client:</div>
-            <div class="spacer"></div>
+            <div style="height: 15px;"></div>
             <div class="dots">............................</div>
-            <div class="spacer"></div>
+            
+            <div style="height: 8px;"></div>
             <div>Signature client:</div>
             
-            <div class="spacer"></div>
-            <div class="spacer"></div>
-            <div class="spacer"></div>
+            <div style="height: 35px;"></div>
             
             <div class="center-text">Exemplaire chauffeur</div>
         </div>
