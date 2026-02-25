@@ -1,156 +1,230 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Générateur Ticket Taxi</title>
-
-<script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-<style>
-body{font-family:'Source Code Pro', monospace}
-#preview{
-white-space:pre-wrap;
-background:#f5f5f5;
-border:1px solid #ddd;
-max-width:320px;
-font-size:12px;
-padding:10px;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générateur Ticket Taxi - Elidrissi Hicham</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+    <style>
+        body { font-family: 'Courier Prime', monospace; }
+        #preview {
+            white-space: pre-wrap;
+            background: #fff;
+            border: 1px dashed #ccc;
+            max-width: 340px;
+            font-size: 13px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            line-height: 1.2;
+            margin: 0 auto;
+        }
+    </style>
 </head>
 
 <body class="bg-gray-100 flex justify-center items-center min-h-screen p-4">
 
-<div class="bg-white p-6 rounded-xl shadow grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="bg-white p-6 rounded-xl shadow-lg grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl w-full">
 
-<div>
-<h2 class="text-xl font-bold mb-3">Ticket Taxi Paris</h2>
+    <div>
+        <h2 class="text-2xl font-bold mb-4">Générateur Ticket</h2>
+        
+        <div class="grid grid-cols-2 gap-4 mb-3">
+            <div>
+                <label class="text-sm font-bold">Date</label>
+                <input id="date" type="date" value="2026-02-23" class="border p-2 w-full rounded">
+            </div>
+            <div>
+                <label class="text-sm font-bold">Distance (km)</label>
+                <input id="distance" type="number" step="0.1" value="64.8" class="border p-2 w-full rounded">
+            </div>
+        </div>
 
-<label>Prix course</label>
-<input id="price" type="number" value="20" class="border p-2 w-full mb-2">
+        <div class="grid grid-cols-2 gap-4 mb-3">
+            <div>
+                <label class="text-sm font-bold">Heure Départ</label>
+                <input id="start" type="time" value="12:54" class="border p-2 w-full rounded">
+            </div>
+            <div>
+                <label class="text-sm font-bold">Heure Arrivée</label>
+                <input id="end" type="time" value="13:52" class="border p-2 w-full rounded">
+            </div>
+        </div>
 
-<label>Supplément</label>
-<select id="supp" class="border p-2 w-full mb-2">
-<option value="4" data-text="Appel immédiat">Appel immédiat</option>
-<option value="7" data-text="Appel réservé">Appel réservé</option>
-</select>
+        <div class="mb-4">
+            <label class="text-sm font-bold">Prix Total TTC (€)</label>
+            <input id="price" type="number" step="0.01" value="135.24" class="border p-2 w-full rounded">
+        </div>
 
-<label>Début</label>
-<input id="start" type="datetime-local" class="border p-2 w-full mb-2">
+        <button onclick="generate()" class="bg-black text-white font-bold w-full p-3 rounded hover:bg-gray-800 transition">
+            Télécharger le Ticket PDF
+        </button>
+    </div>
 
-<label>Fin</label>
-<input id="end" type="datetime-local" class="border p-2 w-full mb-3">
-
-<button onclick="generate()" class="bg-black text-white w-full p-3 rounded">
-Télécharger PDF
-</button>
-</div>
-
-<div>
-<h3 class="font-bold mb-2">Aperçu</h3>
-<div id="preview"></div>
-</div>
+    <div>
+        <h3 class="font-bold mb-2 text-center text-lg">Aperçu en direct</h3>
+        <div id="preview"></div>
+    </div>
 
 </div>
 
 <script>
-const {jsPDF}=window.jspdf
+    const { jsPDF } = window.jspdf;
 
-function format(d){
-const date=new Date(d)
-return date.toLocaleString("fr-FR",{hour12:false})
-}
+    // Fonction pour formater la date de AAAA-MM-JJ vers JJ/MM/AAAA
+    function formatDateFR(dateStr) {
+        if (!dateStr) return "";
+        const [year, month, day] = dateStr.split("-");
+        return `${day}/${month}/${year}`;
+    }
 
-function updatePreview(){
-const price=parseFloat(priceInput.value)||0
-const supp=parseFloat(suppSelect.value)||0
-const text=suppSelect.options[suppSelect.selectedIndex].dataset.text
-const start=startInput.value
-const end=endInput.value
-const total=price+supp
-const vat=(total/1.1)*0.1
+    // Fonction pour justifier le texte (gauche / droite)
+    function padLR(left, right, width = 32) {
+        const spaces = width - left.length - right.length;
+        return left + " ".repeat(Math.max(1, spaces)) + right;
+    }
 
-preview.innerText=`
-TICKET CHAUFFEUR
-TAXI AZZOUZI
-TEL: 06 59 10 28 52
-STAT: PARIS N°2033
-IMMAT: EY-370-ZG
+    function updatePreview() {
+        const dateStr = formatDateFR(document.getElementById("date").value);
+        const start = document.getElementById("start").value;
+        const end = document.getElementById("end").value;
+        const dist = parseFloat(document.getElementById("distance").value).toFixed(1);
+        
+        const ttc = parseFloat(document.getElementById("price").value) || 0;
+        const ht = ttc / 1.10;
+        const tva = ttc - ht;
+        const priseEnCharge = 2.94; // Fixe selon l'image
 
-${format(end)}
+        // Construction du texte de l'aperçu pour correspondre exactement à l'image
+        let html = "";
+        html += "             TAXI\n";
+        html += "       ELIDRISSI HICHAM\n\n";
+        
+        html += padLR("N° Stat.:", "1") + "\n";
+        html += padLR("N° Immat.:", "FK-309-AA") + "\n";
+        html += "Commune de rattachement:\n";
+        html += "       MANTES LA JOLIE\n\n";
+        
+        html += padLR("Date:", dateStr) + "\n";
+        html += padLR(`Départ:${start}`, `Arrivée:${end}`) + "\n";
+        html += padLR("Distance:", `${dist} km`) + "\n";
+        html += "Lieu départ:\n\n............................\n\n";
+        html += "Lieu arrivée:\n\n............................\n\n";
+        
+        html += padLR("Prise en charge", `${priseEnCharge.toFixed(2)} €`) + "\n\n";
+        
+        html += padLR("TOTAL TTC", `${ttc.toFixed(2)} €`) + "\n";
+        html += padLR("Total TVA 10.00%", `${tva.toFixed(2)} €`) + "\n";
+        html += padLR("Total HT", `${ht.toFixed(2)} €`) + "\n\n";
+        
+        html += "Le tarif minimum, suppl.\ninclus, susceptible d'être\nperçu pour une course est\nfixé à  8.00 €\n\n";
+        
+        html += "Adresse de réclamation:\n";
+        html += "  Prefecture des Yvelines\n";
+        html += "Bureau de la reglementation\n";
+        html += "      General 1rue jean\n";
+        html += "   Houdon 78010 Versailles\n";
+        html += "            Cedex\n\n";
+        
+        html += "Nom client:\n\n............................\n\n";
+        html += "Adresse client:\n\n............................\n\n";
+        html += "Signature client:\n\n\n\n\n";
+        html += "    Exemplaire chauffeur";
 
-DEBUT: ${format(start)}
-FIN  : ${format(end)}
+        document.getElementById("preview").innerText = html;
+    }
 
-PRIX COURSE € ${price.toFixed(2)}
-SUPPLEMENT ${text} ${supp.toFixed(2)}
+    function generate() {
+        updatePreview();
 
-A PAYER TTC € ${total.toFixed(2)}
-DONT TVA 10% ${vat.toFixed(2)}
-`
-}
+        const dateStr = formatDateFR(document.getElementById("date").value);
+        const start = document.getElementById("start").value;
+        const end = document.getElementById("end").value;
+        const dist = parseFloat(document.getElementById("distance").value).toFixed(1);
+        
+        const ttc = parseFloat(document.getElementById("price").value) || 0;
+        const ht = ttc / 1.10;
+        const tva = ttc - ht;
+        const priseEnCharge = 2.94;
 
-function generate(){
-updatePreview()
+        // Configuration jsPDF pour format ticket de caisse thermique (58mm)
+        const doc = new jsPDF({ unit: "mm", format: [58, 200] });
+        doc.setFont("Courier");
+        doc.setFontSize(9); // Taille optimale pour 58mm
+        
+        let y = 8;
+        const leftX = 4;
+        const rightX = 54;
+        const centerX = 29;
 
-const price=parseFloat(priceInput.value)||0
-const supp=parseFloat(suppSelect.value)||0
-const text=suppSelect.options[suppSelect.selectedIndex].dataset.text
-const start=startInput.value
-const end=endInput.value
-const total=price+supp
-const vat=(total/1.1)*0.1
+        function line(text, x = leftX) { doc.text(text, x, y); y += 4; }
+        function lineCenter(text) { doc.text(text, centerX, y, { align: "center" }); y += 4; }
+        function lineRight(text) { doc.text(text, rightX, y, { align: "right" }); }
 
-const doc=new jsPDF({unit:"mm",format:[58,220]})
-doc.setFont("Courier")
+        // En-tête
+        lineCenter("TAXI");
+        lineCenter("ELIDRISSI HICHAM");
+        y += 2;
 
-let y=10
-function line(t){doc.text(t,4,y);y+=4}
+        // Info Véhicule
+        line("N° Stat.:"); lineRight("1"); y += 4;
+        line("N° Immat.:"); lineRight("FK-309-AA"); y += 4;
+        line("Commune de rattachement:");
+        lineCenter("MANTES LA JOLIE");
+        y += 2;
 
-line("TICKET CHAUFFEUR")
-line("TAXI AZZOUZI")
-y+=2
-line("TEL: 06 59 10 28 52")
-line("STAT: PARIS N°2033")
-line("IMMAT: EY-370-ZG")
-y+=4
-line(format(end))
-y+=4
-line("DEBUT: "+format(start))
-line("FIN: "+format(end))
-y+=4
-line("PRIX COURSE € "+price.toFixed(2))
-line("SUPPLEMENT "+text+" "+supp.toFixed(2))
-y+=4
-line("A PAYER TTC € "+total.toFixed(2))
-line("DONT TVA 10% "+vat.toFixed(2))
-y+=4
+        // Info Trajet
+        line("Date:"); lineRight(dateStr); y += 4;
+        line(`Départ:${start}`); lineRight(`Arrivée:${end}`); y += 4;
+        line("Distance:"); lineRight(`${dist} km`); y += 4;
+        
+        line("Lieu départ:"); y += 2;
+        line("............................"); y += 2;
+        line("Lieu arrivée:"); y += 2;
+        line("............................"); y += 2;
 
-doc.setFontSize(6)
-doc.text(doc.splitTextToSize(
-"Quel que soit le montant des suppléments inclus, la somme perçue par le chauffeur est celle indiquée ci-dessus.",50),4,y)
-y+=10
+        // Prix
+        line("Prise en charge"); lineRight(`${priseEnCharge.toFixed(2)} €`); y += 6;
+        
+        doc.setFont("Courier", "bold");
+        line("TOTAL TTC"); lineRight(`${ttc.toFixed(2)} €`); y += 4;
+        doc.setFont("Courier", "normal");
+        
+        line("Total TVA 10.00%"); lineRight(`${tva.toFixed(2)} €`); y += 4;
+        line("Total HT"); lineRight(`${ht.toFixed(2)} €`); y += 6;
 
-doc.text(doc.splitTextToSize(
-"Pour information, le prix inclut une prise en charge de 3.00€ (Tarif A:1.25€/km et 38.85€/h, Tarif B:1.64€/km et 51.79€/h, Tarif C:1.74€/km et 42.52€/h).",50),4,y)
-y+=12
+        // Mentions légales
+        doc.setFontSize(8);
+        doc.text(doc.splitTextToSize("Le tarif minimum, suppl. inclus, susceptible d'être perçu pour une course est fixé à 8.00 €", 50), leftX, y);
+        y += 12;
 
-doc.text(doc.splitTextToSize(
-"En cas de contestation, écrire à: Préfecture de police, DUPA – Bureau taxis, 36 rue des Morillons TSA 31691 – 75732 PARIS CEDEX 15.",50),4,y)
+        line("Adresse de réclamation:");
+        doc.text(doc.splitTextToSize("Prefecture des Yvelines Bureau de la reglementation General 1rue jean Houdon 78010 Versailles Cedex", 45), centerX, y, { align: "center" });
+        y += 16;
 
-doc.save("ticket.pdf")
-}
+        // Signatures
+        doc.setFontSize(9);
+        line("Nom client:"); y += 2;
+        line("............................"); y += 2;
+        line("Adresse client:"); y += 2;
+        line("............................"); y += 2;
+        line("Signature client:");
+        
+        y += 12;
+        lineCenter("Exemplaire chauffeur");
 
-const priceInput=document.getElementById("price")
-const suppSelect=document.getElementById("supp")
-const startInput=document.getElementById("start")
-const endInput=document.getElementById("end")
-const preview=document.getElementById("preview")
+        // Téléchargement
+        doc.save(`Ticket_${dateStr.replace(/\//g, "-")}.pdf`);
+    }
 
-document.querySelectorAll("input,select").forEach(e=>e.oninput=updatePreview)
+    // Écouteurs d'événements pour mettre à jour l'aperçu en temps réel
+    document.querySelectorAll("input").forEach(e => e.addEventListener("input", updatePreview));
+
+    // Initialisation au chargement de la page
+    window.onload = updatePreview;
 </script>
 
 </body>
