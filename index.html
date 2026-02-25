@@ -6,18 +6,18 @@
     <title>Générateur Ticket Taxi - Elidrissi Hicham</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <style>
-        body { font-family: 'Roboto Mono', monospace; }
+        /* Exact font match for thermal printers - NO Google Fonts, raw system monospace */
+        body { font-family: 'Courier New', Courier, monospace; }
         
         #receipt-container {
             background: #fff;
             width: 320px; 
             padding: 20px;
             font-size: 13px;
-            line-height: 1.3; /* Tighter line height to mimic the printer */
+            line-height: 1.25; /* Tight line height */
             color: #000;
             margin: 0 auto;
             border: 1px dashed #ccc;
@@ -30,8 +30,35 @@
         }
 
         .center-text { text-align: center; }
-        .bold { font-weight: 700; }
-        .dots { letter-spacing: 2px; }
+        
+        /* Dashed line matching the photo exactly */
+        .dashed-line {
+            letter-spacing: 2px; /* Spaces out the dashes */
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        /* The TOTAL TTC font style - imitating double-height thermal print */
+        .total-ttc-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 15px 0 10px 0; /* Space around total */
+        }
+        
+        .total-ttc-row span {
+            /* Thermal printers switch to a blocky sans-serif for totals and stretch it vertically */
+            font-family: Arial, Helvetica, sans-serif; 
+            font-size: 17px;
+            font-weight: 900;
+            transform: scale(1, 1.4); /* Stretch vertically by 40% */
+            display: inline-block;
+        }
+        
+        /* Keep transform anchor points clean so it aligns perfectly with margins */
+        .total-ttc-row span:first-child { transform-origin: left center; }
+        .total-ttc-row span:last-child { transform-origin: right center; }
+
     </style>
 </head>
 
@@ -40,9 +67,9 @@
 <div class="bg-white p-6 rounded-xl shadow-lg grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl w-full">
 
     <div>
-        <h2 class="text-2xl font-bold mb-4">Générateur Ticket</h2>
+        <h2 class="text-2xl font-bold mb-4 font-sans">Générateur Ticket</h2>
         
-        <div class="grid grid-cols-2 gap-4 mb-3">
+        <div class="grid grid-cols-2 gap-4 mb-3 font-sans">
             <div>
                 <label class="text-sm font-bold">Date</label>
                 <input id="date" type="date" value="2026-02-23" class="border p-2 w-full rounded">
@@ -53,7 +80,7 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-4 mb-3">
+        <div class="grid grid-cols-2 gap-4 mb-3 font-sans">
             <div>
                 <label class="text-sm font-bold">Heure Départ</label>
                 <input id="start" type="time" value="12:54" class="border p-2 w-full rounded">
@@ -64,80 +91,91 @@
             </div>
         </div>
 
-        <div class="mb-4">
+        <div class="mb-4 font-sans">
             <label class="text-sm font-bold">Prix Total TTC (€)</label>
             <input id="price" type="number" step="0.01" value="135.24" class="border p-2 w-full rounded">
         </div>
 
-        <button onclick="generatePDF()" class="bg-black text-white font-bold w-full p-3 rounded hover:bg-gray-800 transition">
+        <button onclick="generatePDF()" class="bg-black text-white font-bold w-full p-3 rounded hover:bg-gray-800 transition font-sans">
             Télécharger le Ticket PDF
         </button>
     </div>
 
     <div>
-        <h3 class="font-bold mb-2 text-center text-lg">Aperçu et Rendu</h3>
+        <h3 class="font-bold mb-2 text-center text-lg font-sans">Aperçu et Rendu</h3>
         
         <div id="receipt-container">
             <div class="center-text">TAXI<br>ELIDRISSI HICHAM</div>
             
-            <div style="height: 12px;"></div>
+            <div style="height: 15px;"></div>
 
             <div class="flex-row"><span>N° Stat.:</span><span>1</span></div>
             <div class="flex-row"><span>N° Immat.:</span><span>FK-309-AA</span></div>
             <div>Commune de rattachement:</div>
             <div class="center-text">MANTES LA JOLIE</div>
 
-            <div style="height: 12px;"></div>
+            <div style="height: 15px;"></div>
 
             <div class="flex-row"><span>Date:</span><span id="r-date">23/02/2026</span></div>
             <div class="flex-row"><span>Départ:<span id="r-start">12:54</span></span><span>Arrivée:<span id="r-end">13:52</span></span></div>
+            <div class="flex-row"><span>Distance:</span><span id="r-dist">64.8 km</span></div>
             
-            <div class="flex-row" style="margin-bottom: 2px;"><span>Distance:</span><span id="r-dist">64.8 km</span></div>
             <div>Lieu départ:</div>
             
             <div style="height: 15px;"></div>
-            <div class="dots">............................</div>
+            <div class="dashed-line">- - - - - - - - - - - - - - - - -</div>
+            <div style="height: 15px;"></div>
             
-            <div style="margin-top: 5px;">Lieu arrivée:</div>
+            <div>Lieu arrivée:</div>
             
             <div style="height: 15px;"></div>
-            <div class="dots">............................</div>
+            <div class="dashed-line">- - - - - - - - - - - - - - - - -</div>
             <div style="height: 15px;"></div>
+            
             <div class="flex-row"><span>Prise en charge</span><span>2.94 €</span></div>
             
-            <div style="height: 12px;"></div>
-            <div class="flex-row bold" style="font-size: 15px;"><span>TOTAL TTC</span><span id="r-ttc">135.24 €</span></div>
+            <div class="total-ttc-row">
+                <span>TOTAL TTC</span>
+                <span id="r-ttc">135.24 €</span>
+            </div>
+            
             <div class="flex-row"><span>Total TVA 10.00%</span><span id="r-tva">12.29 €</span></div>
             <div class="flex-row"><span>Total HT</span><span id="r-ht">122.95 €</span></div>
             
-            <div style="height: 24px;"></div>
+            <div style="height: 20px;"></div>
             
-            <div>Le tarif minimum, suppl.<br>inclus, susceptible d'être<br>perçu pour une course est<br>fixé à 8.00 €</div>
+            <div>Le tarif minimum, suppl.<br>inclus, susceptible d'être<br>perçu pour une course est<br>fixé à  8.00 €</div>
             
-            <div style="height: 12px;"></div>
+            <div style="height: 15px;"></div>
             
             <div>Adresse de réclamation:</div>
-            <div class="center-text">Prefecture des Yvelines<br>Bureau de la reglementation<br>General 1rue jean<br>Houdon 78010 Versailles<br>Cedex</div>
+            <div>&nbsp;&nbsp;Prefecture des Yvelines</div>
+            <div>Bureau de la reglementation</div>
+            <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;General 1rue jean</div>
+            <div>&nbsp;&nbsp;&nbsp;Houdon 78010 Versailles</div>
+            <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Cedex</div>
             
-            <div style="height: 12px;"></div>
+            <div style="height: 15px;"></div>
             
             <div>Nom client:</div>
             <div style="height: 15px;"></div>
-            <div class="dots">............................</div>
+            <div class="dashed-line">- - - - - - - - - - - - - - - - -</div>
             
-            <div style="height: 8px;"></div>
+            <div style="height: 15px;"></div>
+            
             <div>Adresse client:</div>
             <div style="height: 15px;"></div>
-            <div class="dots">............................</div>
+            <div class="dashed-line">- - - - - - - - - - - - - - - - -</div>
             
-            <div style="height: 8px;"></div>
+            <div style="height: 15px;"></div>
+            
             <div>Signature client:</div>
             
             <div style="height: 35px;"></div>
             
             <div class="center-text">Exemplaire chauffeur</div>
         </div>
-    </div>
+        </div>
 
 </div>
 
@@ -176,7 +214,7 @@
             margin:       [10, 0, 10, 0], 
             filename:     `Ticket_${dateStr.replace(/\//g, "-")}.pdf`,
             image:        { type: 'jpeg', quality: 1 },
-            html2canvas:  { scale: 3, useCORS: true }, 
+            html2canvas:  { scale: 4, useCORS: true }, 
             jsPDF:        { unit: 'mm', format: [80, 260], orientation: 'portrait' }
         };
 
