@@ -15,9 +15,9 @@
         #receipt-container {
             box-sizing: border-box; 
             background: #fff;
-            /* Reduced width to guarantee it scales perfectly into the center of the PDF */
-            width: 280px; 
-            padding: 10px; 
+            width: 310px; 
+            /* 20px padding left and right acts as the PERFECT equal PDF margin */
+            padding: 20px 20px; 
             font-size: 13px;
             line-height: 1.25; 
             color: #000;
@@ -29,13 +29,14 @@
         .flex-row {
             display: flex;
             justify-content: space-between;
+            width: 100%;
         }
 
         .center-text { text-align: center; }
         
-        /* Dotted line matching the photo exactly */
-        .dots-line {
-            letter-spacing: 3px; 
+        /* Dashed line matching the photo exactly */
+        .dashed-line {
+            letter-spacing: 2px; 
             overflow: hidden;
             white-space: nowrap;
             width: 100%;
@@ -48,12 +49,13 @@
             justify-content: space-between;
             align-items: center;
             margin: 15px 0 10px 0; 
+            width: 100%;
         }
         
         .total-ttc-row span {
             font-family: Arial, Helvetica, sans-serif; 
             font-size: 16px;
-            font-weight: 500; /* Bolder as requested */
+            font-weight: 800; /* Bolder as requested */
             transform: scale(1, 1.35); 
             display: inline-block;
         }
@@ -66,12 +68,12 @@
 
 <body class="bg-gray-100 flex justify-center items-center min-h-screen p-4">
 
-<div class="bg-white p-6 rounded-xl shadow-lg grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl w-full">
+<div class="bg-white p-6 rounded-xl shadow-lg grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl w-full font-sans">
 
     <div>
-        <h2 class="text-2xl font-bold mb-4 font-sans">Générateur Ticket</h2>
+        <h2 class="text-2xl font-bold mb-4">Générateur Ticket</h2>
         
-        <div class="grid grid-cols-2 gap-4 mb-3 font-sans">
+        <div class="grid grid-cols-2 gap-4 mb-3">
             <div>
                 <label class="text-sm font-bold">Date</label>
                 <input id="date" type="date" value="2026-02-23" class="border p-2 w-full rounded">
@@ -82,7 +84,7 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-4 mb-3 font-sans">
+        <div class="grid grid-cols-2 gap-4 mb-3">
             <div>
                 <label class="text-sm font-bold">Heure Départ</label>
                 <input id="start" type="time" value="12:54" class="border p-2 w-full rounded">
@@ -93,18 +95,18 @@
             </div>
         </div>
 
-        <div class="mb-4 font-sans">
+        <div class="mb-4">
             <label class="text-sm font-bold">Prix Total TTC (€)</label>
             <input id="price" type="number" step="0.01" value="135.24" class="border p-2 w-full rounded">
         </div>
 
-        <button onclick="generatePDF()" class="bg-black text-white font-bold w-full p-3 rounded hover:bg-gray-800 transition font-sans">
+        <button onclick="generatePDF()" class="bg-black text-white font-bold w-full p-3 rounded hover:bg-gray-800 transition">
             Télécharger le Ticket PDF
         </button>
     </div>
 
     <div>
-        <h3 class="font-bold mb-2 text-center text-lg font-sans">Aperçu et Rendu</h3>
+        <h3 class="font-bold mb-2 text-center text-lg">Aperçu et Rendu</h3>
         
         <div id="receipt-container">
             <div class="center-text">TAXI<br>ELIDRISSI HICHAM</div>
@@ -125,13 +127,13 @@
             <div>Lieu départ:</div>
             
             <div style="height: 15px;"></div>
-            <div class="dots-line">................................</div>
+            <div class="dashed-line">- - - - - - - - - - - - - - - - - - - - - - -</div>
             <div style="height: 15px;"></div>
             
             <div>Lieu arrivée:</div>
             
             <div style="height: 15px;"></div>
-            <div class="dots-line">................................</div>
+            <div class="dashed-line">- - - - - - - - - - - - - - - - - - - - - - -</div>
             <div style="height: 15px;"></div>
             
             <div class="flex-row"><span>Prise en charge</span><span>2.94 €</span></div>
@@ -161,13 +163,13 @@
             
             <div>Nom client:</div>
             <div style="height: 15px;"></div>
-            <div class="dots-line">................................</div>
+            <div class="dashed-line">- - - - - - - - - - - - - - - - - - - - - - -</div>
             
             <div style="height: 15px;"></div>
             
             <div>Adresse client:</div>
             <div style="height: 15px;"></div>
-            <div class="dots-line">................................</div>
+            <div class="dashed-line">- - - - - - - - - - - - - - - - - - - - - - -</div>
             
             <div style="height: 15px;"></div>
             
@@ -209,13 +211,18 @@
         const dateStr = formatDateFR(document.getElementById("date").value);
         const element = document.getElementById('receipt-container');
         
+        // --- THE MAGIC FIX ---
+        // Temporarily remove shadow, border, AND CENTERING before capturing the PDF
+        // This stops html2canvas from capturing the left empty space!
         element.style.border = "none";
         element.style.boxShadow = "none";
+        element.style.margin = "0"; 
 
         const opt = {
-            // [Top, Right, Bottom, Left] in millimeters
-            // This guarantees exactly 6mm of blank space on both sides!
-            margin:       [10, 6, 10, 6], 
+            // [Top, Right, Bottom, Left]
+            // Side margins are set to exactly 0. 
+            // The 20px CSS padding is what guarantees perfect centering.
+            margin:       [10, 0, 10, 0], 
             filename:     `Ticket_${dateStr.replace(/\//g, "-")}.pdf`,
             image:        { type: 'jpeg', quality: 1 },
             html2canvas:  { scale: 4, useCORS: true }, 
@@ -223,8 +230,10 @@
         };
 
         html2pdf().set(opt).from(element).save().then(() => {
+            // Restore styling and centering after download
             element.style.border = "1px dashed #ccc";
             element.style.boxShadow = "0 4px 6px rgba(0,0,0,0.1)";
+            element.style.margin = "0 auto";
         });
     }
 
