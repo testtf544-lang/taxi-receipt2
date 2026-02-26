@@ -15,11 +15,12 @@
         #receipt-container {
             box-sizing: border-box; 
             background: #fff;
-            width: 310px; 
-            /* 20px padding left and right acts as the PERFECT equal PDF margin */
-            padding: 20px 20px; 
-            font-size: 13px;
-            line-height: 1.25; 
+            /* 240px is the perfect ratio for 58mm thermal printers */
+            width: 240px; 
+            /* 10px padding guarantees perfect centering on the 58mm roll */
+            padding: 10px 10px; 
+            font-size: 11px; /* Scaled down slightly to fit 58mm width */
+            line-height: 1.2; 
             color: #000;
             margin: 0 auto;
             border: 1px dashed #ccc;
@@ -48,14 +49,14 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin: 15px 0 10px 0; 
+            margin: 10px 0 8px 0; 
             width: 100%;
         }
         
         .total-ttc-row span {
             font-family: Arial, Helvetica, sans-serif; 
-            font-size: 16px;
-            font-weight: 500; /* Bolder as requested */
+            font-size: 13px; /* Adjusted for the 58mm paper scale */
+            font-weight: 800; 
             transform: scale(1, 1.35); 
             display: inline-block;
         }
@@ -71,7 +72,7 @@
 <div class="bg-white p-6 rounded-xl shadow-lg grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl w-full font-sans">
 
     <div>
-        <h2 class="text-2xl font-bold mb-4">Générateur Ticket</h2>
+        <h2 class="text-2xl font-bold mb-4">Générateur Ticket (58mm)</h2>
         
         <div class="grid grid-cols-2 gap-4 mb-3">
             <div>
@@ -111,14 +112,14 @@
         <div id="receipt-container">
             <div class="center-text">TAXI<br>ELIDRISSI HICHAM</div>
             
-            <div style="height: 15px;"></div>
+            <div style="height: 10px;"></div>
 
             <div class="flex-row"><span>N° Stat.:</span><span>1</span></div>
             <div class="flex-row"><span>N° Immat.:</span><span>FK-309-AA</span></div>
             <div>Commune de rattachement:</div>
             <div class="center-text">MANTES LA JOLIE</div>
 
-            <div style="height: 15px;"></div>
+            <div style="height: 10px;"></div>
 
             <div class="flex-row"><span>Date:</span><span id="r-date">23/02/2026</span></div>
             <div class="flex-row"><span>Départ:<span id="r-start">12:54</span></span><span>Arrivée:<span id="r-end">13:52</span></span></div>
@@ -126,15 +127,15 @@
             
             <div>Lieu départ:</div>
             
-            <div style="height: 15px;"></div>
+            <div style="height: 10px;"></div>
             <div class="dashed-line">- - - - - - - - - - - - - - - - - - - - - - -</div>
-            <div style="height: 15px;"></div>
+            <div style="height: 10px;"></div>
             
             <div>Lieu arrivée:</div>
             
-            <div style="height: 15px;"></div>
+            <div style="height: 10px;"></div>
             <div class="dashed-line">- - - - - - - - - - - - - - - - - - - - - - -</div>
-            <div style="height: 15px;"></div>
+            <div style="height: 10px;"></div>
             
             <div class="flex-row"><span>Prise en charge</span><span>2.94 €</span></div>
             
@@ -146,11 +147,11 @@
             <div class="flex-row"><span>Total TVA 10.00%</span><span id="r-tva">12.29 €</span></div>
             <div class="flex-row"><span>Total HT</span><span id="r-ht">122.95 €</span></div>
             
-            <div style="height: 20px;"></div>
+            <div style="height: 15px;"></div>
             
             <div>Le tarif minimum, suppl.<br>inclus, susceptible d'être<br>perçu pour une course est<br>fixé à  8.00 €</div>
             
-            <div style="height: 15px;"></div>
+            <div style="height: 10px;"></div>
             
             <div>Adresse de réclamation:</div>
             <div>&nbsp;&nbsp;Prefecture des Yvelines</div>
@@ -159,23 +160,23 @@
             <div>&nbsp;&nbsp;&nbsp;Houdon 78010 Versailles</div>
             <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Cedex</div>
             
-            <div style="height: 15px;"></div>
+            <div style="height: 10px;"></div>
             
             <div>Nom client:</div>
-            <div style="height: 15px;"></div>
+            <div style="height: 10px;"></div>
             <div class="dashed-line">- - - - - - - - - - - - - - - - - - - - - - -</div>
             
-            <div style="height: 15px;"></div>
+            <div style="height: 10px;"></div>
             
             <div>Adresse client:</div>
-            <div style="height: 15px;"></div>
+            <div style="height: 10px;"></div>
             <div class="dashed-line">- - - - - - - - - - - - - - - - - - - - - - -</div>
             
-            <div style="height: 15px;"></div>
+            <div style="height: 10px;"></div>
             
             <div>Signature client:</div>
             
-            <div style="height: 35px;"></div>
+            <div style="height: 30px;"></div>
             
             <div class="center-text">Exemplaire chauffeur</div>
         </div>
@@ -211,26 +212,24 @@
         const dateStr = formatDateFR(document.getElementById("date").value);
         const element = document.getElementById('receipt-container');
         
-        // --- THE MAGIC FIX ---
-        // Temporarily remove shadow, border, AND CENTERING before capturing the PDF
-        // This stops html2canvas from capturing the left empty space!
+        // Remove styling for raw PDF capture
         element.style.border = "none";
         element.style.boxShadow = "none";
         element.style.margin = "0"; 
 
         const opt = {
             // [Top, Right, Bottom, Left]
-            // Side margins are set to exactly 0. 
-            // The 20px CSS padding is what guarantees perfect centering.
-            margin:       [10, 0, 10, 0], 
+            // Sides must be 0mm so the printer driver doesn't squeeze the image.
+            margin:       [2, 0, 2, 0], 
             filename:     `Ticket_${dateStr.replace(/\//g, "-")}.pdf`,
             image:        { type: 'jpeg', quality: 1 },
             html2canvas:  { scale: 4, useCORS: true }, 
-            jsPDF:        { unit: 'mm', format: [80, 260], orientation: 'portrait' }
+            // CONFIGURATION EXACTE POUR IMPRIMANTE BISOFICE (58mm de largeur, 220mm de longueur)
+            jsPDF:        { unit: 'mm', format: [58, 220], orientation: 'portrait' }
         };
 
         html2pdf().set(opt).from(element).save().then(() => {
-            // Restore styling and centering after download
+            // Restore web layout after download
             element.style.border = "1px dashed #ccc";
             element.style.boxShadow = "0 4px 6px rgba(0,0,0,0.1)";
             element.style.margin = "0 auto";
