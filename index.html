@@ -9,20 +9,21 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <style>
-        /* Exact font match for thermal printers */
+        /* Police machine à écrire thermique classique */
         body { font-family: 'Courier New', Courier, monospace; }
         
         #receipt-container {
             box-sizing: border-box; 
             background: #fff;
-            /* 240px is the perfect ratio for 58mm thermal printers */
-            width: 240px; 
-            /* 10px padding guarantees perfect centering on the 58mm roll */
-            padding: 10px 10px; 
-            font-size: 11px; /* Scaled down slightly to fit 58mm width */
-            line-height: 1.2; 
+            /* Largeur réduite à 190px pour correspondre pile aux 48mm imprimables de l'imprimante */
+            width: 190px; 
+            padding: 5px; 
+            font-size: 10px; /* Taille optimale pour cette largeur */
+            line-height: 1.15; 
             color: #000;
             margin: 0 auto;
+            /* Imitation de l'encre thermique forte de l'original */
+            font-weight: 700; 
             border: 1px dashed #ccc;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
@@ -35,16 +36,16 @@
 
         .center-text { text-align: center; }
         
-        /* Dashed line matching the photo exactly */
-        .dashed-line {
-            letter-spacing: 2px; 
+        /* Ligne de petits points exacts */
+        .dots-line {
+            letter-spacing: 1px; 
             overflow: hidden;
             white-space: nowrap;
             width: 100%;
             display: block;
         }
 
-        /* The TOTAL TTC font style */
+        /* Ligne TOTAL TTC (Double Hauteur thermique) */
         .total-ttc-row {
             display: flex;
             justify-content: space-between;
@@ -54,10 +55,11 @@
         }
         
         .total-ttc-row span {
-            font-family: Arial, Helvetica, sans-serif; 
-            font-size: 13px; /* Adjusted for the 58mm paper scale */
-            font-weight: 800; 
-            transform: scale(1, 1.35); 
+            font-family: inherit; /* Utilise la même police que le reste */
+            font-size: 12px; 
+            font-weight: 900; 
+            /* Étire le texte verticalement comme l'imprimante thermique originale */
+            transform: scale(1, 1.5); 
             display: inline-block;
         }
         
@@ -72,7 +74,7 @@
 <div class="bg-white p-6 rounded-xl shadow-lg grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl w-full font-sans">
 
     <div>
-        <h2 class="text-2xl font-bold mb-4">Générateur Ticket (58mm)</h2>
+        <h2 class="text-2xl font-bold mb-4">Générateur Ticket (58mm RawBT)</h2>
         
         <div class="grid grid-cols-2 gap-4 mb-3">
             <div>
@@ -127,15 +129,15 @@
             
             <div>Lieu départ:</div>
             
-            <div style="height: 10px;"></div>
-            <div class="dashed-line">- - - - - - - - - - - - - - - - - - - - - - -</div>
-            <div style="height: 10px;"></div>
+            <div style="height: 8px;"></div>
+            <div class="dots-line">........................................</div>
+            <div style="height: 8px;"></div>
             
             <div>Lieu arrivée:</div>
             
-            <div style="height: 10px;"></div>
-            <div class="dashed-line">- - - - - - - - - - - - - - - - - - - - - - -</div>
-            <div style="height: 10px;"></div>
+            <div style="height: 8px;"></div>
+            <div class="dots-line">........................................</div>
+            <div style="height: 8px;"></div>
             
             <div class="flex-row"><span>Prise en charge</span><span>2.94 €</span></div>
             
@@ -163,16 +165,16 @@
             <div style="height: 10px;"></div>
             
             <div>Nom client:</div>
-            <div style="height: 10px;"></div>
-            <div class="dashed-line">- - - - - - - - - - - - - - - - - - - - - - -</div>
+            <div style="height: 8px;"></div>
+            <div class="dots-line">........................................</div>
             
-            <div style="height: 10px;"></div>
+            <div style="height: 8px;"></div>
             
             <div>Adresse client:</div>
-            <div style="height: 10px;"></div>
-            <div class="dashed-line">- - - - - - - - - - - - - - - - - - - - - - -</div>
+            <div style="height: 8px;"></div>
+            <div class="dots-line">........................................</div>
             
-            <div style="height: 10px;"></div>
+            <div style="height: 8px;"></div>
             
             <div>Signature client:</div>
             
@@ -212,19 +214,18 @@
         const dateStr = formatDateFR(document.getElementById("date").value);
         const element = document.getElementById('receipt-container');
         
-        // Remove styling for raw PDF capture
         element.style.border = "none";
         element.style.boxShadow = "none";
         element.style.margin = "0"; 
 
         const opt = {
-            // [Top, Right, Bottom, Left]
-            // Sides must be 0mm so the printer driver doesn't squeeze the image.
-            margin:       [2, 0, 2, 0], 
+            // C'EST ICI LA CORRECTION MAGIQUE POUR RAWBT !
+            // Marge Haut, Droite, Bas, Gauche. 
+            // On met 5mm à gauche et à droite pour que le texte rentre pile dans la zone d'impression.
+            margin:       [2, 5, 2, 5], 
             filename:     `Ticket_${dateStr.replace(/\//g, "-")}.pdf`,
             image:        { type: 'jpeg', quality: 1 },
             html2canvas:  { scale: 4, useCORS: true }, 
-            // CONFIGURATION EXACTE POUR IMPRIMANTE BISOFICE (58mm de largeur, 220mm de longueur)
             jsPDF:        { unit: 'mm', format: [58, 220], orientation: 'portrait' }
         };
 
