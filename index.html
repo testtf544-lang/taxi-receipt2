@@ -168,13 +168,9 @@
             <div style="height: 8px;"></div>
             <div class="dots-line">........................................</div>
             
-            <div style="height: 8px;"></div>
-            
             <div>Adresse client:</div>
             <div style="height: 8px;"></div>
             <div class="dots-line">........................................</div>
-            
-            <div style="height: 8px;"></div>
             
             <div>Signature client:</div>
             
@@ -219,9 +215,6 @@
         element.style.margin = "0"; 
 
         const opt = {
-            // C'EST ICI LA CORRECTION MAGIQUE POUR RAWBT !
-            // Marge Haut, Droite, Bas, Gauche. 
-            // On met 5mm à gauche et à droite pour que le texte rentre pile dans la zone d'impression.
             margin:       [2, 5, 2, 5], 
             filename:     `Ticket_${dateStr.replace(/\//g, "-")}.pdf`,
             image:        { type: 'jpeg', quality: 1 },
