@@ -23,9 +23,10 @@
             font-weight: 400; 
             box-sizing: border-box; 
             background: #fff;
-            width: 190px; 
-            padding: 5px; 
-            font-size: 10px; 
+            width: 205px; /* Largeur ajustée */
+            /* LE SECRET EST ICI : 18px de padding à droite pour protéger le texte ! */
+            padding: 5px 18px 5px 8px; 
+            font-size: 9.5px; /* Légèrement réduit pour garantir que tout rentre */
             line-height: 1.15; 
             color: #000;
             margin: 0 auto;
@@ -61,8 +62,8 @@
         
         .total-ttc-row span {
             font-family: 'Source Code Pro', monospace;
-            font-size: 12px; 
-            font-weight: 600; 
+            font-size: 11.5px; 
+            font-weight: 700; 
             transform: scale(0.9, 1.4); 
             display: inline-block;
         }
@@ -78,7 +79,7 @@
 <div class="bg-white p-6 rounded-xl shadow-lg grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl w-full">
 
     <div>
-        <h2 class="text-2xl font-bold mb-4 text-gray-800">Générateur Ticket</h2>
+        <h2 class="text-2xl font-bold mb-4 text-gray-800">Générateur Ticket (58mm RawBT)</h2>
         <p class="text-gray-500 mb-6 text-sm">Saisissez les détails de la course pour générer le reçu.</p>
         
         <div class="grid grid-cols-2 gap-4 mb-3">
@@ -154,88 +155,4 @@
             
             <div style="height: 15px;"></div>
             
-            <div>Le tarif minimum, suppl.<br>inclus, susceptible d'être<br>perçu pour une course est<br>fixé à  8.00 €</div>
-            
-            <div style="height: 10px;"></div>
-            
-            <div>Adresse de réclamation:</div>
-            <div>&nbsp;&nbsp;Prefecture des Yvelines</div>
-            <div>Bureau de la reglementation</div>
-            <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;General 1rue jean</div>
-            <div>&nbsp;&nbsp;&nbsp;Houdon 78010 Versailles</div>
-            <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Cedex</div>
-            
-            <div style="height: 10px;"></div>
-            
-            <div>Nom client:</div>
-            <div style="height: 8px;"></div>
-            <div class="dots-line">........................................</div>
-            
-            <div>Adresse client:</div>
-            <div style="height: 8px;"></div>
-            <div class="dots-line">........................................</div>
-            
-            <div>Signature client:</div>
-            
-            <div style="height: 30px;"></div>
-            
-            <div class="center-text">Exemplaire chauffeur</div>
-        </div>
-        </div>
-
-</div>
-
-<script>
-    function formatDateFR(dateStr) {
-        if (!dateStr) return "";
-        const [year, month, day] = dateStr.split("-");
-        return `${day}/${month}/${year}`;
-    }
-
-    function updatePreview() {
-        document.getElementById("r-date").innerText = formatDateFR(document.getElementById("date").value);
-        document.getElementById("r-start").innerText = document.getElementById("start").value;
-        document.getElementById("r-end").innerText = document.getElementById("end").value;
-        document.getElementById("r-dist").innerText = parseFloat(document.getElementById("distance").value).toFixed(1) + " km";
-        
-        const ttc = parseFloat(document.getElementById("price").value) || 0;
-        const ht = ttc / 1.10;
-        const tva = ttc - ht;
-        
-        document.getElementById("r-ttc").innerText = ttc.toFixed(2) + " €";
-        document.getElementById("r-tva").innerText = tva.toFixed(2) + " €";
-        document.getElementById("r-ht").innerText = ht.toFixed(2) + " €";
-    }
-
-    function generatePDF() {
-        updatePreview();
-        
-        const dateStr = formatDateFR(document.getElementById("date").value);
-        const element = document.getElementById('receipt-container');
-        
-        element.style.border = "none";
-        element.style.boxShadow = "none";
-        element.style.margin = "0"; 
-
-        const opt = {
-            margin:       [2, 5, 2, 5], 
-            filename:     `Ticket_${dateStr.replace(/\//g, "-")}.pdf`,
-            image:        { type: 'jpeg', quality: 1 },
-            html2canvas:  { scale: 4, useCORS: true }, 
-            jsPDF:        { unit: 'mm', format: [58, 220], orientation: 'portrait' }
-        };
-
-        html2pdf().set(opt).from(element).save().then(() => {
-            // Restore web layout after download
-            element.style.border = "1px dashed #ccc";
-            element.style.boxShadow = "0 4px 6px rgba(0,0,0,0.1)";
-            element.style.margin = "0 auto";
-        });
-    }
-
-    document.querySelectorAll("input").forEach(e => e.addEventListener("input", updatePreview));
-    window.onload = updatePreview;
-</script>
-
-</body>
-</html>
+            <div>Le tarif minimum, suppl.<br>inclus, susceptible d'être<br>per
