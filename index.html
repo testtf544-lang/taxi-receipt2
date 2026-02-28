@@ -20,13 +20,13 @@
         /* Police Source Code Pro pour le ticket */
         #receipt-container {
             font-family: 'Source Code Pro', monospace;
-            font-weight: 300; 
+            font-weight: 400; 
             box-sizing: border-box; 
             background: #fff;
-            width: 200px; /* Largeur ajustée */
-            /* LE SECRET EST ICI : 18px de padding à droite pour protéger le texte ! */
-            padding: 5px 5px 5px 10px; 
-            font-size: 9.5px; /* Légèrement réduit pour garantir que tout rentre */
+            width: 205px; /* Largeur ajustée pour RawBT */
+            /* 18px de padding à droite pour protéger le texte ! */
+            padding: 5px 18px 5px 8px; 
+            font-size: 9.5px; 
             line-height: 1.15; 
             color: #000;
             margin: 0 auto;
@@ -135,7 +135,9 @@
             
             <div>Lieu départ:</div>
             
-            <div style="height: 18px;"></div>
+            <div style="height: 8px;"></div>
+            <div class="dots-line">........................................</div>
+            <div style="height: 8px;"></div>
             
             <div>Lieu arrivée:</div>
             
@@ -219,7 +221,6 @@
         element.style.margin = "0"; 
 
         const opt = {
-            // Marges à ZERO sur les côtés. Le CSS avec "padding: 5px 18px 5px 8px" protège le texte à droite.
             margin:       [2, 0, 2, 0], 
             filename:     `Ticket_${dateStr.replace(/\//g, "-")}.pdf`,
             image:        { type: 'jpeg', quality: 1 },
