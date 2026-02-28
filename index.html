@@ -8,24 +8,25 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+    
     <style>
-        /* Police imitant parfaitement l'impression thermique ESC/POS */
+        /* Application de la police Inter */
         body { 
-            font-family: 'Courier New', Courier, monospace; 
+            font-family: 'Inter', sans-serif; 
         }
         
         #receipt-container {
             box-sizing: border-box; 
             background: #fff;
             width: 190px; 
-            padding: 8px; 
-            font-size: 9px; 
+            padding: 5px; 
+            font-size: 10px; 
             line-height: 1.15; 
             color: #000;
             margin: 0 auto;
-            /* Resserre légèrement les lettres pour l'effet "machine" */
             letter-spacing: -0.2px; 
-            font-weight: 600; /* Assez net pour l'encre thermique */
+            font-weight: 600; /* Poids semi-bold pour une bonne lisibilité thermique */
             border: 1px dashed #ccc;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
@@ -38,7 +39,6 @@
 
         .center-text { text-align: center; }
         
-        /* Ligne de petits points exacts */
         .dots-line {
             letter-spacing: 1px; 
             overflow: hidden;
@@ -47,22 +47,20 @@
             display: block;
         }
 
-        /* Ligne TOTAL TTC - Imitation exacte de la photo (haut et étroit) */
         .total-ttc-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin: 10px 0 8px 0; 
             width: 100%;
-            height: 20px; /* Force la hauteur pour laisser la place à l'étirement */
+            height: 20px; 
         }
         
         .total-ttc-row span {
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 12px; 
-            font-weight: 700; 
-            /* Étire fortement en hauteur (1.8) et compresse en largeur (0.85) */
-            transform: scale(0.85, 1.8); 
+            font-family: 'Inter', sans-serif;
+            font-size: 13px; 
+            font-weight: 900; /* Extra bold pour le total */
+            transform: scale(0.9, 1.4); /* Légèrement étiré pour le style reçu */
             display: inline-block;
         }
         
@@ -74,7 +72,7 @@
 
 <body class="bg-gray-100 flex justify-center items-center min-h-screen p-4">
 
-<div class="bg-white p-6 rounded-xl shadow-lg grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl w-full font-sans">
+<div class="bg-white p-6 rounded-xl shadow-lg grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl w-full">
 
     <div>
         <h2 class="text-2xl font-bold mb-4">Générateur Ticket (58mm RawBT)</h2>
