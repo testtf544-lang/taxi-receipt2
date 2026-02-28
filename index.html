@@ -155,4 +155,89 @@
             
             <div style="height: 15px;"></div>
             
-            <div>Le tarif minimum, suppl.<br>inclus, susceptible d'être<br>per
+            <div>Le tarif minimum, suppl.<br>inclus, susceptible d'être<br>perçu pour une course est<br>fixé à  8.00 €</div>
+            
+            <div style="height: 10px;"></div>
+            
+            <div>Adresse de réclamation:</div>
+            <div>&nbsp;&nbsp;Prefecture des Yvelines</div>
+            <div>Bureau de la reglementation</div>
+            <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;General 1rue jean</div>
+            <div>&nbsp;&nbsp;&nbsp;Houdon 78010 Versailles</div>
+            <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Cedex</div>
+            
+            <div style="height: 10px;"></div>
+            
+            <div>Nom client:</div>
+            <div style="height: 8px;"></div>
+            <div class="dots-line">........................................</div>
+            
+            <div>Adresse client:</div>
+            <div style="height: 8px;"></div>
+            <div class="dots-line">........................................</div>
+            
+            <div>Signature client:</div>
+            
+            <div style="height: 30px;"></div>
+            
+            <div class="center-text">Exemplaire chauffeur</div>
+        </div>
+        </div>
+
+</div>
+
+<script>
+    function formatDateFR(dateStr) {
+        if (!dateStr) return "";
+        const [year, month, day] = dateStr.split("-");
+        return `${day}/${month}/${year}`;
+    }
+
+    function updatePreview() {
+        document.getElementById("r-date").innerText = formatDateFR(document.getElementById("date").value);
+        document.getElementById("r-start").innerText = document.getElementById("start").value;
+        document.getElementById("r-end").innerText = document.getElementById("end").value;
+        document.getElementById("r-dist").innerText = parseFloat(document.getElementById("distance").value).toFixed(1) + " km";
+        
+        const ttc = parseFloat(document.getElementById("price").value) || 0;
+        const ht = ttc / 1.10;
+        const tva = ttc - ht;
+        
+        document.getElementById("r-ttc").innerText = ttc.toFixed(2) + " €";
+        document.getElementById("r-tva").innerText = tva.toFixed(2) + " €";
+        document.getElementById("r-ht").innerText = ht.toFixed(2) + " €";
+    }
+
+    function generatePDF() {
+        updatePreview();
+        
+        const dateStr = formatDateFR(document.getElementById("date").value);
+        const element = document.getElementById('receipt-container');
+        
+        element.style.border = "none";
+        element.style.boxShadow = "none";
+        element.style.margin = "0"; 
+
+        const opt = {
+            // Marges à ZERO sur les côtés. Le CSS avec "padding: 5px 18px 5px 8px" protège le texte à droite.
+            margin:       [2, 0, 2, 0], 
+            filename:     `Ticket_${dateStr.replace(/\//g, "-")}.pdf`,
+            image:        { type: 'jpeg', quality: 1 },
+            html2canvas:  { scale: 4, useCORS: true }, 
+            jsPDF:        { unit: 'mm', format: [58, 220], orientation: 'portrait' }
+        };
+
+        html2pdf().set(opt).from(element).save().then(() => {
+            // Restore web layout after download
+            element.style.border = "1px dashed #ccc";
+            element.style.boxShadow = "0 4px 6px rgba(0,0,0,0.1)";
+            element.style.margin = "0 auto";
+        });
+    }
+
+    document.querySelectorAll("input").forEach(e => e.addEventListener("input", updatePreview));
+    window.onload = updatePreview;
+</script>
+
+</body>
+</html>
