@@ -8,15 +8,19 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500;700&display=swap" rel="stylesheet">
     
     <style>
-        /* Application de la police Inter */
+        /* Police Inter pour l'interface utilisateur */
         body { 
             font-family: 'Inter', sans-serif; 
         }
         
+        /* Police Source Code Pro pour le ticket */
         #receipt-container {
+            font-family: 'Source Code Pro', monospace;
+            font-weight: 400; /* Poids normal comme demandé dans ton code */
             box-sizing: border-box; 
             background: #fff;
             width: 190px; 
@@ -26,7 +30,6 @@
             color: #000;
             margin: 0 auto;
             letter-spacing: -0.2px; 
-            font-weight: 600; /* Poids semi-bold pour une bonne lisibilité thermique */
             border: 1px dashed #ccc;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
@@ -57,10 +60,10 @@
         }
         
         .total-ttc-row span {
-            font-family: 'Inter', sans-serif;
-            font-size: 13px; 
-            font-weight: 900; /* Extra bold pour le total */
-            transform: scale(0.9, 1.4); /* Légèrement étiré pour le style reçu */
+            font-family: 'Source Code Pro', monospace;
+            font-size: 12px; 
+            font-weight: 700; /* Bold pour bien faire ressortir le Total TTC */
+            transform: scale(0.9, 1.4); /* Effet d'étirement de la machine thermique */
             display: inline-block;
         }
         
@@ -75,42 +78,43 @@
 <div class="bg-white p-6 rounded-xl shadow-lg grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl w-full">
 
     <div>
-        <h2 class="text-2xl font-bold mb-4">Générateur Ticket (58mm RawBT)</h2>
+        <h2 class="text-2xl font-bold mb-4 text-gray-800">Générateur Ticket (58mm RawBT)</h2>
+        <p class="text-gray-500 mb-6 text-sm">Saisissez les détails de la course pour générer le reçu.</p>
         
         <div class="grid grid-cols-2 gap-4 mb-3">
             <div>
-                <label class="text-sm font-bold">Date</label>
-                <input id="date" type="date" value="2026-02-23" class="border p-2 w-full rounded">
+                <label class="text-sm font-medium text-gray-700">Date</label>
+                <input id="date" type="date" value="2026-02-23" class="mt-1 border p-2 w-full rounded focus:ring-indigo-500 focus:border-indigo-500">
             </div>
             <div>
-                <label class="text-sm font-bold">Distance (km)</label>
-                <input id="distance" type="number" step="0.1" value="64.8" class="border p-2 w-full rounded">
+                <label class="text-sm font-medium text-gray-700">Distance (km)</label>
+                <input id="distance" type="number" step="0.1" value="64.8" class="mt-1 border p-2 w-full rounded focus:ring-indigo-500 focus:border-indigo-500">
             </div>
         </div>
 
         <div class="grid grid-cols-2 gap-4 mb-3">
             <div>
-                <label class="text-sm font-bold">Heure Départ</label>
-                <input id="start" type="time" value="12:54" class="border p-2 w-full rounded">
+                <label class="text-sm font-medium text-gray-700">Heure Départ</label>
+                <input id="start" type="time" value="12:54" class="mt-1 border p-2 w-full rounded focus:ring-indigo-500 focus:border-indigo-500">
             </div>
             <div>
-                <label class="text-sm font-bold">Heure Arrivée</label>
-                <input id="end" type="time" value="13:52" class="border p-2 w-full rounded">
+                <label class="text-sm font-medium text-gray-700">Heure Arrivée</label>
+                <input id="end" type="time" value="13:52" class="mt-1 border p-2 w-full rounded focus:ring-indigo-500 focus:border-indigo-500">
             </div>
         </div>
 
-        <div class="mb-4">
-            <label class="text-sm font-bold">Prix Total TTC (€)</label>
-            <input id="price" type="number" step="0.01" value="135.24" class="border p-2 w-full rounded">
+        <div class="mb-5">
+            <label class="text-sm font-medium text-gray-700">Prix Total TTC (€)</label>
+            <input id="price" type="number" step="0.01" value="135.24" class="mt-1 border p-2 w-full rounded focus:ring-indigo-500 focus:border-indigo-500">
         </div>
 
-        <button onclick="generatePDF()" class="bg-black text-white font-bold w-full p-3 rounded hover:bg-gray-800 transition">
+        <button onclick="generatePDF()" class="bg-indigo-600 text-white font-medium w-full py-3 px-4 rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition">
             Télécharger le Ticket PDF
         </button>
     </div>
 
-    <div>
-        <h3 class="font-bold mb-2 text-center text-lg">Aperçu et Rendu</h3>
+    <div class="flex flex-col items-center">
+        <h3 class="font-semibold text-gray-700 mb-4 text-lg">Aperçu du Ticket</h3>
         
         <div id="receipt-container">
             <div class="center-text">TAXI<br>ELIDRISSI HICHAM</div>
