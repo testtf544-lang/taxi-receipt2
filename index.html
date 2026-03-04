@@ -9,6 +9,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
     
     <style>
         /* Police Inter pour l'interface utilisateur */
@@ -16,23 +17,20 @@
             font-family: 'Inter', sans-serif; 
         }
         
-        /* LA POLICE THERMIQUE EXACTE 1000% */
+        /* Police Roboto Mono pour le ticket */
         #receipt-container {
-            /* Lucida Console/Consolas donnent exactement la forme des lettres de ta photo */
-            font-family: 'Lucida Console', 'Consolas', 'Liberation Mono', monospace;
-            font-weight: 300; /* Très gras pour correspondre à l'encre thermique */
-            /* LE SECRET : Un micro-contour noir pour simuler l'encre qui bave sur le papier thermique */
-            text-shadow: 0.3px 0.3px 0px rgba(0,0,0,0.8), -0.3px -0.3px 0px rgba(0,0,0,0.8);
-            
+            font-family: 'Roboto Mono', monospace;
+            font-weight: 300; 
             box-sizing: border-box; 
             background: #fff;
-            width: 150px; 
+            width: 205px; /* Largeur ajustée pour RawBT */
+            /* 18px de padding à droite pour protéger le texte ! */
             padding: 5px 10px 5px 8px; 
             font-size: 9.5px; 
             line-height: 1.15; 
             color: #000;
             margin: 0 auto;
-            letter-spacing: 0px; /* Les lettres ne sont pas collées dans ta photo */
+            letter-spacing: -0.2px; 
             border: 1px dashed #ccc;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
@@ -45,9 +43,8 @@
 
         .center-text { text-align: center; }
         
-        /* Les petits points espacés */
         .dots-line {
-            letter-spacing: 1.5px; 
+            letter-spacing: 1px; 
             overflow: hidden;
             white-space: nowrap;
             width: 100%;
@@ -63,11 +60,10 @@
             height: 16px; 
         }
         
-        /* TOTAL TTC ÉTIRÉ */
         .total-ttc-row span {
-            font-family: inherit;
+            font-family: 'Roboto Mono', monospace;
             font-size: 11.5px; 
-            font-weight: 800; 
+            font-weight: 500; /* Légèrement gras pour Roboto Mono */
             transform: scale(0.9, 1.4); 
             display: inline-block;
         }
@@ -232,6 +228,7 @@
         };
 
         html2pdf().set(opt).from(element).save().then(() => {
+            // Restore web layout after download
             element.style.border = "1px dashed #ccc";
             element.style.boxShadow = "0 4px 6px rgba(0,0,0,0.1)";
             element.style.margin = "0 auto";
