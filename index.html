@@ -15,15 +15,20 @@
             font-family: 'Inter', sans-serif; 
         }
 
-        /* * LA POLICE EXACTE DU TICKET ORIGINAL (À GAUCHE SUR TA PHOTO)
-         * Courier New en Bold simule l'encre thermique de l'imprimante 58mm
+        /* * LA POLICE EXACTE DU TICKET ORIGINAL 
+         * Le width est bloqué avec !important pour empêcher le PDF de s'étirer !
          */
         #receipt-container {
             font-family: 'Courier New', Courier, monospace;
-            font-weight: bold; /* Force l'encre épaisse comme la vraie machine */
+            font-weight: bold; 
             box-sizing: border-box;
             background: #fff;
-            width: 205px; 
+            
+            /* BLOCAGE STRICT DE LA LARGEUR POUR LE PDF */
+            width: 200px !important; 
+            min-width: 200px !important;
+            max-width: 200px !important;
+            
             padding: 5px 8px;
             font-size: 10px;
             line-height: 1.15;
@@ -31,7 +36,6 @@
             margin: 0 auto;
             letter-spacing: -0.2px;
             border: 1px dashed #ccc;
-            /* Supprime le lissage pour que l'imprimante thermique garde la netteté */
             -webkit-font-smoothing: none;
             -moz-osx-font-smoothing: unset;
         }
@@ -63,12 +67,12 @@
             height: 18px;
         }
 
-        /* TOTAL TTC : Étiré en hauteur (scaleY: 1.5) mais garde la même épaisseur (bold standard) */
+        /* TOTAL TTC : Étiré en hauteur (scaleY: 1.5) */
         .total-ttc-row span {
             font-family: 'Courier New', Courier, monospace;
-            font-size: 12px;
+            font-size: 12.5px;
             font-weight: bold; 
-            transform: scale(1, 1.5); 
+            transform: scale(0.95, 1.5); 
             display: inline-block;
         }
         
@@ -160,13 +164,13 @@
             <div>Lieu d&eacute;part:</div>
             
             <div style="height:14px"></div>
-            <div class="dots-line">........................................</div>
+            <div class="dots-line">. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .</div>
             <div style="height:8px"></div>
 
             <div>Lieu arriv&eacute;e:</div>
             
             <div style="height:14px"></div>
-            <div class="dots-line">........................................</div>
+            <div class="dots-line">. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .</div>
             <div style="height:8px"></div>
 
             <div class="flex-row">
@@ -199,12 +203,12 @@
 
             <div>Nom client:</div>
             <div style="height:14px"></div>
-            <div class="dots-line">........................................</div>
+            <div class="dots-line">. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .</div>
 
             <div style="height:8px"></div>
             <div>Adresse client:</div>
             <div style="height:14px"></div>
-            <div class="dots-line">........................................</div>
+            <div class="dots-line">. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .</div>
 
             <div style="height:8px"></div>
             <div>Signature client:</div>
@@ -246,25 +250,30 @@
         const dateStr = formatDateFR(document.getElementById("date").value);
         const element = document.getElementById('receipt-container');
 
+        // On sauvegarde le style pour le remettre après
+        const originalBorder = element.style.border;
+        const originalShadow = element.style.boxShadow;
+
         element.style.border     = "none";
         element.style.boxShadow  = "none";
-        element.style.margin     = "0";
 
         const opt = {
-            margin:      [2, 0, 2, 0],
+            margin:      0, // Marge à ZERO pour ne pas écraser l'image dans le PDF
             filename:    `Ticket_${dateStr.replace(/\//g, "-")}.pdf`,
             image:       { type: 'jpeg', quality: 1 },
             html2canvas: {
                 scale: 2, 
-                useCORS: true
+                useCORS: true,
+                width: 200, // On force la capture à s'arrêter exactement à 200px (la taille du ticket)
+                windowWidth: 200 
             },
             jsPDF: { unit: 'mm', format: [58, 220], orientation: 'portrait' }
         };
 
         html2pdf().set(opt).from(element).save().then(() => {
-            element.style.border    = "1px dashed #ccc";
-            element.style.boxShadow = "0 4px 6px rgba(0,0,0,0.1)";
-            element.style.margin    = "0 auto";
+            // On remet la bordure sur le site web
+            element.style.border    = originalBorder;
+            element.style.boxShadow = originalShadow;
         });
     }
 
