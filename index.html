@@ -15,11 +15,9 @@
             font-family: 'Inter', sans-serif; 
         }
 
-        /* * LA POLICE EXACTE DU TICKET ORIGINAL 
-         * Le width est bloqué pour empêcher le PDF de s'étirer
-         */
         #receipt-container {
-            font-family: 'Roboto', Courier, monospace;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold; 
             box-sizing: border-box;
             background: #fff;
             
@@ -47,7 +45,6 @@
 
         .center-text { text-align: center; }
 
-        /* Les lignes pointillées identiques à l'original */
         .dots-line {
             display: block;
             width: 100%;
@@ -62,11 +59,12 @@
             justify-content: space-between;
             align-items: baseline;
             width: 100%;
-            margin: 8px 0 2px 0;
-            height: 18px;
+            /* ESPACE EN DESSOUS SUPPRIMÉ (0px) */
+            margin: 6px 0 0px 0; 
+            /* Hauteur réduite pour que la ligne TVA remonte et colle au TTC */
+            height: 14px; 
         }
 
-        /* TOTAL TTC : Étiré en hauteur (scaleY: 1.5) */
         .total-ttc-row span {
             font-family: 'Courier New', Courier, monospace;
             font-size: 12.5px;
@@ -185,7 +183,7 @@
             <div class="flex-row"><span>Total TVA 10.00%</span><span id="r-tva">12.29 &euro;</span></div>
             <div class="flex-row"><span>Total HT</span><span id="r-ht">122.95 &euro;</span></div>
 
-            <div style="height:10px"></div>
+            <div style="height:15px"></div>
 
             <div>Le tarif minimum, suppl.<br>inclus, susceptible d'&ecirc;tre<br>per&ccedil;u pour une course est<br>fix&eacute; &agrave;&nbsp; 8.00 &euro;</div>
 
@@ -249,28 +247,25 @@
         const dateStr = formatDateFR(document.getElementById("date").value);
         const element = document.getElementById('receipt-container');
 
-        // Sauvegarde des styles pour les remettre après
         const originalBorder = element.style.border;
         const originalMargin = element.style.margin;
 
-        // On enlève la bordure et le centrage juste le temps de prendre la photo PDF !
         element.style.border = "none";
         element.style.margin = "0";
 
         const opt = {
-            margin:      0, // Zéro marge
+            margin:      0, 
             filename:    `Ticket_${dateStr.replace(/\//g, "-")}.pdf`,
             image:       { type: 'jpeg', quality: 1 },
             html2canvas: {
-                scale: 2, // Scale parfait pour les 203 DPI de l'imprimante 58mm
+                scale: 2, 
                 useCORS: true,
-                backgroundColor: "#ffffff" // S'assure que le fond n'est pas transparent/noir
+                backgroundColor: "#ffffff"
             },
             jsPDF: { unit: 'mm', format: [58, 220], orientation: 'portrait' }
         };
 
         html2pdf().set(opt).from(element).save().then(() => {
-            // On remet la bordure et le centrage sur l'écran
             element.style.border = originalBorder;
             element.style.margin = originalMargin;
         });
