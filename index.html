@@ -9,34 +9,31 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- VT323: bitmap terminal font — exact match to thermal dot-matrix printer output -->
-    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
 
     <style>
         body { 
-            font-family: 'Roboto', sans-serif; 
+            font-family: 'Inter', sans-serif; 
         }
 
+        /* * LA POLICE EXACTE DU TICKET ORIGINAL (À GAUCHE SUR TA PHOTO)
+         * Courier New en Bold simule l'encre thermique de l'imprimante 58mm
+         */
         #receipt-container {
-            font-family: 'VT323', monospace;
-            font-weight: 300;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold; /* Force l'encre épaisse comme la vraie machine */
             box-sizing: border-box;
             background: #fff;
-            width: 212px;
-            padding: 6px 8px 6px 8px;
-            font-size: 14.5px;
-            line-height: 1.25;
+            width: 205px; 
+            padding: 5px 8px;
+            font-size: 10px;
+            line-height: 1.15;
             color: #000;
             margin: 0 auto;
-            letter-spacing: 0.5px;
-            word-spacing: 1px;
+            letter-spacing: -0.2px;
             border: 1px dashed #ccc;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            /* Crisp pixel rendering — no smoothing, like a real thermal printer */
+            /* Supprime le lissage pour que l'imprimante thermique garde la netteté */
             -webkit-font-smoothing: none;
             -moz-osx-font-smoothing: unset;
-            image-rendering: pixelated;
-            text-rendering: optimizeSpeed;
         }
 
         .flex-row {
@@ -47,41 +44,37 @@
 
         .center-text { text-align: center; }
 
+        /* Les lignes pointillées identiques à l'original */
         .dots-line {
             display: block;
             width: 100%;
             overflow: hidden;
             white-space: nowrap;
-            font-size: 11px;
-            letter-spacing: 2px;
+            letter-spacing: 1.5px;
             color: #000;
         }
 
-        /* TOTAL TTC — large bold */
         .total-ttc-row {
             display: flex;
             justify-content: space-between;
             align-items: baseline;
             width: 100%;
-            margin: 4px 0 1px 0;
+            margin: 8px 0 2px 0;
+            height: 18px;
         }
 
+        /* TOTAL TTC : Étiré en hauteur (scaleY: 1.5) mais garde la même épaisseur (bold standard) */
         .total-ttc-row span {
-            font-family: 'VT323', monospace;
-            font-size: 19px;
-            font-weight: 400;
-            letter-spacing: 0.5px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 12px;
+            font-weight: bold; 
+            transform: scale(1, 1.5); 
+            display: inline-block;
         }
+        
+        .total-ttc-row span:first-child { transform-origin: left bottom; }
+        .total-ttc-row span:last-child { transform-origin: right bottom; }
 
-        /* Header: TAXI / ELIDRISSI HICHAM */
-        .ticket-header {
-            font-family: 'VT323', monospace;
-            font-size: 16px;
-            font-weight: 400;
-            text-align: center;
-            line-height: 1.3;
-            letter-spacing: 1px;
-        }
     </style>
 </head>
 
@@ -89,9 +82,8 @@
 
 <div class="bg-white p-6 rounded-xl shadow-lg grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl w-full">
 
-    <!-- LEFT: FORM -->
     <div>
-        <h2 class="text-2xl font-bold mb-4 text-gray-800">Générateur Ticket (58mm RawBT)</h2>
+        <h2 class="text-2xl font-bold mb-4 text-gray-800">Générateur Ticket (Copie Originale)</h2>
         <p class="text-gray-500 mb-6 text-sm">Saisissez les détails de la course pour générer le reçu.</p>
         
         <div class="grid grid-cols-2 gap-4 mb-3">
@@ -132,16 +124,14 @@
         </button>
     </div>
 
-    <!-- RIGHT: TICKET PREVIEW -->
     <div class="flex flex-col items-center">
         <h3 class="font-semibold text-gray-700 mb-4 text-lg">Aperçu du Ticket</h3>
 
         <div id="receipt-container">
 
-            <!-- HEADER -->
-            <div class="ticket-header">TAXI<br>ELIDRISSI HICHAM</div>
+            <div class="center-text">TAXI<br>ELIDRISSI HICHAM</div>
 
-            <div style="height:6px"></div>
+            <div style="height:10px"></div>
 
             <div class="flex-row">
                 <span>N&#xB0; Stat.:</span><span>1</span>
@@ -152,7 +142,7 @@
             <div>Commune de rattachement:</div>
             <div class="center-text">MANTES LA JOLIE</div>
 
-            <div style="height:6px"></div>
+            <div style="height:10px"></div>
 
             <div class="flex-row">
                 <span>Date:</span>
@@ -168,14 +158,16 @@
             </div>
 
             <div>Lieu d&eacute;part:</div>
-            <div style="height:4px"></div>
-            <div class="dots-line">. . . . . . . . . . . . . . . . . . . . . .</div>
-            <div style="height:2px"></div>
+            
+            <div style="height:14px"></div>
+            <div class="dots-line">........................................</div>
+            <div style="height:8px"></div>
 
             <div>Lieu arriv&eacute;e:</div>
-            <div style="height:4px"></div>
-            <div class="dots-line">. . . . . . . . . . . . . . . . . . . . . .</div>
-            <div style="height:4px"></div>
+            
+            <div style="height:14px"></div>
+            <div class="dots-line">........................................</div>
+            <div style="height:8px"></div>
 
             <div class="flex-row">
                 <span>Prise en charge</span>
@@ -190,34 +182,34 @@
             <div class="flex-row"><span>Total TVA 10.00%</span><span id="r-tva">12.29 &euro;</span></div>
             <div class="flex-row"><span>Total HT</span><span id="r-ht">122.95 &euro;</span></div>
 
-            <div style="height:7px"></div>
+            <div style="height:15px"></div>
 
-            <div>Le tarif minimum, suppl.</div>
-            <div>inclus, susceptible d'&ecirc;tre</div>
-            <div>per&ccedil;u pour une course est</div>
-            <div>fix&eacute; &agrave;&nbsp; 8.00 &euro;</div>
+            <div>Le tarif minimum, suppl.<br>inclus, susceptible d'&ecirc;tre<br>per&ccedil;u pour une course est<br>fix&eacute; &agrave;&nbsp; 8.00 &euro;</div>
 
-            <div style="height:6px"></div>
+            <div style="height:10px"></div>
 
             <div>Adresse de r&eacute;clamation:</div>
             <div>&nbsp;&nbsp;Prefecture des Yvelines</div>
             <div>Bureau de la reglementation</div>
-            <div>&nbsp;&nbsp;&nbsp;General 1rue jean</div>
-            <div>&nbsp;Houdon 78010 Versailles</div>
+            <div>&nbsp;&nbsp;&nbsp;&nbsp;General 1rue jean</div>
+            <div>&nbsp;&nbsp;Houdon 78010 Versailles</div>
             <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Cedex</div>
 
-            <div style="height:6px"></div>
+            <div style="height:10px"></div>
 
             <div>Nom client:</div>
-            <div style="height:3px"></div>
-            <div class="dots-line">. . . . . . . . . . . . . . . . . . . . . .</div>
+            <div style="height:14px"></div>
+            <div class="dots-line">........................................</div>
 
+            <div style="height:8px"></div>
             <div>Adresse client:</div>
-            <div style="height:3px"></div>
-            <div class="dots-line">. . . . . . . . . . . . . . . . . . . . . .</div>
+            <div style="height:14px"></div>
+            <div class="dots-line">........................................</div>
 
+            <div style="height:8px"></div>
             <div>Signature client:</div>
-            <div style="height:28px"></div>
+            
+            <div style="height:35px"></div>
 
             <div class="center-text">Exemplaire chauffeur</div>
 
@@ -261,13 +253,10 @@
         const opt = {
             margin:      [2, 0, 2, 0],
             filename:    `Ticket_${dateStr.replace(/\//g, "-")}.pdf`,
-            image:       { type: 'png', quality: 1 },
+            image:       { type: 'jpeg', quality: 1 },
             html2canvas: {
-                scale: 5,
-                useCORS: true,
-                allowTaint: true,
-                letterRendering: true,
-                imageTimeout: 0
+                scale: 2, 
+                useCORS: true
             },
             jsPDF: { unit: 'mm', format: [58, 220], orientation: 'portrait' }
         };
