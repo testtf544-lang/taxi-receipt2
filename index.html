@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Générateur Ticket Taxi - Elidrissi Hicham</title>
+    <title>Générateur Ticket Taxi - Copie Originale</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -15,25 +15,28 @@
             font-family: 'Inter', sans-serif; 
         }
 
+        /* LE TICKET EXACT : Identique à l'original (Courier + Bold) */
         #receipt-container {
-            font-family: 'Source Code Pro', monospace;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold; /* Simule l'encre thermique */
             box-sizing: border-box;
             background: #fff;
             
-            /* BLOCAGE STRICT DE LA LARGEUR */
-            width: 200px !important; 
-            min-width: 200px !important;
-            max-width: 200px !important;
+            width: 210px !important; /* Largeur idéale pour 58mm */
+            min-width: 210px !important;
+            max-width: 210px !important;
             
             padding: 5px 8px;
             font-size: 10px;
             line-height: 1.15;
             color: #000;
             margin: 0 auto;
-            letter-spacing: -0.2px;
             border: 1px dashed #ccc;
+            
+            /* Pour que l'imprimante garde la netteté des pixels bruts */
             -webkit-font-smoothing: none;
             -moz-osx-font-smoothing: unset;
+            letter-spacing: -0.2px;
         }
 
         .flex-row {
@@ -44,36 +47,37 @@
 
         .center-text { text-align: center; }
 
+        /* Les pointillés, espacés exactement comme la machine */
         .dots-line {
             display: block;
             width: 100%;
             overflow: hidden;
             white-space: nowrap;
-            letter-spacing: 1.5px;
+            letter-spacing: 2px;
             color: #000;
         }
 
+        /* Ligne TOTAL TTC ajustée */
         .total-ttc-row {
             display: flex;
             justify-content: space-between;
-            align-items: baseline;
+            align-items: center;
             width: 100%;
-            /* ESPACE EN DESSOUS SUPPRIMÉ (0px) */
-            margin: 6px 0 0px 0; 
-            /* Hauteur réduite pour que la ligne TVA remonte et colle au TTC */
-            height: 14px; 
+            margin-top: 6px;
+            margin-bottom: 2px;
         }
 
+        /* Étirement du texte TOTAL TTC pour correspondre à l'original */
         .total-ttc-row span {
             font-family: 'Courier New', Courier, monospace;
-            font-size: 12.5px;
-            font-weight: bold; 
-            transform: scale(0.95, 1.5); 
+            font-size: 12px;
+            font-weight: 900; 
+            transform: scale(1, 1.4); 
             display: inline-block;
         }
         
-        .total-ttc-row span:first-child { transform-origin: left bottom; }
-        .total-ttc-row span:last-child { transform-origin: right bottom; }
+        .total-ttc-row span:first-child { transform-origin: left center; }
+        .total-ttc-row span:last-child { transform-origin: right center; }
 
     </style>
 </head>
@@ -83,7 +87,7 @@
 <div class="bg-white p-6 rounded-xl shadow-lg grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl w-full">
 
     <div>
-        <h2 class="text-2xl font-bold mb-4 text-gray-800">Générateur Ticket (Copie Originale)</h2>
+        <h2 class="text-2xl font-bold mb-4 text-gray-800">Générateur Ticket (100% Original)</h2>
         <p class="text-gray-500 mb-6 text-sm">Saisissez les détails de la course pour générer le reçu.</p>
         
         <div class="grid grid-cols-2 gap-4 mb-3">
@@ -119,7 +123,7 @@
         </div>
 
         <button onclick="generatePDF()"
-            class="bg-indigo-600 text-white font-medium w-full py-3 px-4 rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition">
+            class="bg-black text-white font-bold w-full py-3 px-4 rounded-md shadow-sm hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition">
             Télécharger le Ticket PDF
         </button>
     </div>
@@ -158,16 +162,10 @@
             </div>
 
             <div>Lieu d&eacute;part:</div>
-            
-            <div style="height:14px"></div>
-            <div class="dots-line">. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .</div>
-            <div style="height:8px"></div>
+            <div style="height:15px"></div>
 
             <div>Lieu arriv&eacute;e:</div>
-            
-            <div style="height:14px"></div>
-            <div class="dots-line">. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .</div>
-            <div style="height:8px"></div>
+            <div style="height:15px"></div>
 
             <div class="flex-row">
                 <span>Prise en charge</span>
@@ -191,20 +189,20 @@
             <div>Adresse de r&eacute;clamation:</div>
             <div>&nbsp;&nbsp;Prefecture des Yvelines</div>
             <div>Bureau de la reglementation</div>
-            <div>&nbsp;&nbsp;&nbsp;&nbsp;General 1rue jean</div>
-            <div>&nbsp;&nbsp;Houdon 78010 Versailles</div>
+            <div>&nbsp;&nbsp;&nbsp;General 1rue jean</div>
+            <div>&nbsp;Houdon 78010 Versailles</div>
             <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Cedex</div>
 
             <div style="height:10px"></div>
 
             <div>Nom client:</div>
-            <div style="height:14px"></div>
-            <div class="dots-line">. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .</div>
+            <div style="height:12px"></div>
+            <div class="dots-line">..........................................</div>
 
             <div style="height:8px"></div>
             <div>Adresse client:</div>
-            <div style="height:14px"></div>
-            <div class="dots-line">. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .</div>
+            <div style="height:12px"></div>
+            <div class="dots-line">..........................................</div>
 
             <div style="height:8px"></div>
             <div>Signature client:</div>
@@ -246,27 +244,28 @@
         const dateStr = formatDateFR(document.getElementById("date").value);
         const element = document.getElementById('receipt-container');
 
+        // On enlève le design web pour la capture
         const originalBorder = element.style.border;
-        const originalMargin = element.style.margin;
-
         element.style.border = "none";
-        element.style.margin = "0";
 
         const opt = {
-            margin:      0, 
-            filename:    `Ticket_${dateStr.replace(/\//g, "-")}.pdf`,
-            image:       { type: 'jpeg', quality: 1 },
-            html2canvas: {
-                scale: 2, 
+            margin:       0, // Zéro marge
+            filename:     `Ticket_${dateStr.replace(/\//g, "-")}.pdf`,
+            image:        { type: 'jpeg', quality: 1 },
+            html2canvas:  { 
+                scale: 3, // Résolution élevée pour une netteté parfaite à l'impression
                 useCORS: true,
-                backgroundColor: "#ffffff"
+                backgroundColor: "#ffffff",
+                // Corrige le bug du PDF BLANC :
+                scrollX: 0,
+                scrollY: -window.scrollY
             },
             jsPDF: { unit: 'mm', format: [58, 220], orientation: 'portrait' }
         };
 
         html2pdf().set(opt).from(element).save().then(() => {
+            // Restaure le design web
             element.style.border = originalBorder;
-            element.style.margin = originalMargin;
         });
     }
 
