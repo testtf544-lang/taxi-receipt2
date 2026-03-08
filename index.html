@@ -10,6 +10,7 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@200;300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
 
     <style>
         body { font-family: 'Inter', sans-serif; }
@@ -70,9 +71,11 @@
             width: 100%;
             overflow: hidden;
             white-space: nowrap;
-            letter-spacing: 1px;
+            letter-spacing: 0.8px;
             color: #000;
             font-size: 9px;
+            font-family: 'Roboto Mono', monospace;
+            font-weight: 200;
         }
 
         /* TOTAL TTC — tall stretched look matching original */
@@ -86,15 +89,14 @@
         }
 
         .total-ttc-row span {
-            font-family: 'Roboto Mono', monospace;
-            font-size: 11.5px;
-            font-weight: 700;
-            /* Stretch vertically like thermal printer bold */
-            transform: scale(1, 1.35);
+            font-family: 'VT323', monospace;
+            font-size: 15px;
+            font-weight: normal;
+            transform: none;
             display: inline-block;
-            letter-spacing: 0.2px;
-            font-feature-settings: "zero" off, "ss01" off;
-            font-variant-numeric: normal;
+            letter-spacing: 0.5px;
+            -webkit-font-smoothing: none;
+            image-rendering: pixelated;
         }
         .total-ttc-row span:first-child { transform-origin: left center; }
         .total-ttc-row span:last-child  { transform-origin: right center; }
@@ -177,14 +179,14 @@
 
         <div id="receipt-container" class="preview-mode">
 
-            <div class="header">TAXI<br>ELIDRISSI HICHAM</div>
+            <div class="header" style="text-align:center; width:100%;">TAXI<br>ELIDRISSI HICHAM</div>
 
             <div style="height:8px"></div>
 
             <div class="flex-row"><span>N&#xB0;&nbsp;Stat.:</span><span>1</span></div>
             <div class="flex-row"><span>N&#xB0;&nbsp;Immat.:</span><span>FK-309-AA</span></div>
             <div>Commune de rattachement:</div>
-            <div class="city">MANTES LA JOLIE</div>
+            <div class="city" style="text-align:center; width:100%;">MANTES LA JOLIE</div>
 
             <div style="height:8px"></div>
 
@@ -196,12 +198,12 @@
             <div class="flex-row"><span>Distance:</span><span id="r-dist">64.8 km</span></div>
 
             <div>Lieu d&eacute;part:</div>
-            <div style="height:4px"></div>
-            <div class="dots-line">...........................</div>
+            <div style="height:5px"></div>
+            <div class="dots-line">................................</div><div
 
             <div>Lieu arriv&eacute;e:</div>
-            <div style="height:4px"></div>
-            <div class="dots-line">...........................</div>
+            <div style="height:5px"></div>
+            <div class="dots-line">................................</div><div
             <div style="height:5px"></div>
 
             <div class="flex-row"><span>Prise en charge</span><span>2.94 &euro;</span></div>
@@ -233,12 +235,12 @@
             <div style="height:7px"></div>
 
             <div>Nom client:</div>
-            <div style="height:4px"></div>
-            <div class="dots-line">...........................</div>
+            <div style="height:5px"></div>
+            <div class="dots-line">................................</div><div
 
             <div>Adresse client:</div>
-            <div style="height:4px"></div>
-            <div class="dots-line">...........................</div>
+            <div style="height:5px"></div>
+            <div class="dots-line">................................</div><div
 
             <div>Signature client:</div>
             <div style="height:22px"></div>
