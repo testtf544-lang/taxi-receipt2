@@ -3,40 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Générateur Ticket Taxi - Copie Originale</title>
+    <title>Générateur Ticket Taxi - Elidrissi Hicham</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@200;300;400;700&display=swap" rel="stylesheet">
 
     <style>
-        body { 
-            font-family: 'Inter', sans-serif; 
-        }
+        body { font-family: 'Inter', sans-serif; }
 
-        /* LE TICKET EXACT : Identique à l'original (Courier + Bold) */
         #receipt-container {
             font-family: 'Roboto Mono', monospace;
             font-weight: 200;
             box-sizing: border-box;
             background: #fff;
-            
-            width: 210px !important; /* Largeur idéale pour 58mm */
-            min-width: 210px !important;
-            max-width: 210px !important;
-            
+            width: 210px;
             padding: 5px 8px;
             font-size: 9px;
-            line-height: 1.15;
+            line-height: 1.18;
             color: #000;
             margin: 0 auto;
             border: 1px dashed #ccc;
-            
-            /* Pour que l'imprimante garde la netteté des pixels bruts */
+            letter-spacing: -0.2px;
+            /* Thermal printer pixelation: disable subpixel smoothing */
             -webkit-font-smoothing: none;
             -moz-osx-font-smoothing: unset;
-            letter-spacing: -0.2px;
+            text-rendering: optimizeSpeed;
+            /* Disable slashed zero — open clean oval */
+            font-feature-settings: "zero" off, "ss01" off, "ss02" off;
+            font-variant-numeric: normal;
+            font-variant: normal;
+            /* Slight contrast boost to mimic ink dots */
+            filter: contrast(1.15);
+        }
+
+        /* Preview only: add subtle scanline texture simulating thermal paper */
+        #receipt-container.preview-mode::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0,0,0,0.018) 2px,
+                rgba(0,0,0,0.018) 3px
+            );
+            pointer-events: none;
+        }
+        #receipt-container.preview-mode {
+            position: relative;
         }
 
         .flex-row {
@@ -47,38 +65,62 @@
 
         .center-text { text-align: center; }
 
-        /* Les pointillés, espacés exactement comme la machine */
         .dots-line {
             display: block;
             width: 100%;
             overflow: hidden;
             white-space: nowrap;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
             color: #000;
+            font-size: 9px;
         }
 
-        /* Ligne TOTAL TTC ajustée */
+        /* TOTAL TTC — tall stretched look matching original */
         .total-ttc-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
             width: 100%;
-            margin-top: 6px;
-            margin-bottom: 2px;
+            margin-top: 5px;
+            margin-bottom: 1px;
         }
 
-        /* Étirement du texte TOTAL TTC pour correspondre à l'original */
         .total-ttc-row span {
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 12px;
-            font-weight: 600; 
-            transform: scale(1, 1.4); 
+            font-family: 'Roboto Mono', monospace;
+            font-size: 11.5px;
+            font-weight: 700;
+            /* Stretch vertically like thermal printer bold */
+            transform: scale(1, 1.35);
             display: inline-block;
+            letter-spacing: 0.2px;
+            font-feature-settings: "zero" off, "ss01" off;
+            font-variant-numeric: normal;
         }
-        
         .total-ttc-row span:first-child { transform-origin: left center; }
-        .total-ttc-row span:last-child { transform-origin: right center; }
+        .total-ttc-row span:last-child  { transform-origin: right center; }
 
+        /* Guaranteed open zero — Consolas is monospace = same width as Roboto Mono, clean open 0 */
+        .oz {
+            font-family: 'Consolas', 'Courier New', monospace !important;
+            font-size: 1em !important;
+            font-weight: inherit !important;
+            letter-spacing: inherit !important;
+            line-height: inherit !important;
+        }
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 0.3px;
+            font-size: 9px;
+        }
+
+        /* TAXI / ELIDRISSI header */
+        .header {
+            font-weight: 300;
+            text-align: center;
+            line-height: 1.5;
+            letter-spacing: 0.5px;
+            font-size: 9px;
+        }
     </style>
 </head>
 
@@ -86,8 +128,9 @@
 
 <div class="bg-white p-6 rounded-xl shadow-lg grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl w-full">
 
+    <!-- FORM -->
     <div>
-        <h2 class="text-2xl font-bold mb-4 text-gray-800">Générateur Ticket (100% Original)</h2>
+        <h2 class="text-2xl font-bold mb-4 text-gray-800">Générateur Ticket (58mm RawBT)</h2>
         <p class="text-gray-500 mb-6 text-sm">Saisissez les détails de la course pour générer le reçu.</p>
         
         <div class="grid grid-cols-2 gap-4 mb-3">
@@ -123,54 +166,45 @@
         </div>
 
         <button onclick="generatePDF()"
-            class="bg-black text-white font-bold w-full py-3 px-4 rounded-md shadow-sm hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition">
+            class="bg-indigo-600 text-white font-medium w-full py-3 px-4 rounded-md shadow-sm hover:bg-indigo-700 transition">
             Télécharger le Ticket PDF
         </button>
     </div>
 
+    <!-- PREVIEW -->
     <div class="flex flex-col items-center">
         <h3 class="font-semibold text-gray-700 mb-4 text-lg">Aperçu du Ticket</h3>
 
-        <div id="receipt-container">
+        <div id="receipt-container" class="preview-mode">
 
-            <div class="center-text">TAXI<br>ELIDRISSI HICHAM</div>
+            <div class="header">TAXI<br>ELIDRISSI HICHAM</div>
 
-            <div style="height:10px"></div>
+            <div style="height:8px"></div>
 
-            <div class="flex-row">
-                <span>N&#xB0; Stat.:</span><span>1</span>
-            </div>
-            <div class="flex-row">
-                <span>N&#xB0; Immat.:</span><span>FK-309-AA</span>
-            </div>
+            <div class="flex-row"><span>N&#xB0;&nbsp;Stat.:</span><span>1</span></div>
+            <div class="flex-row"><span>N&#xB0;&nbsp;Immat.:</span><span>FK-309-AA</span></div>
             <div>Commune de rattachement:</div>
-            <div class="center-text">MANTES LA JOLIE</div>
+            <div class="city">MANTES LA JOLIE</div>
 
-            <div style="height:10px"></div>
+            <div style="height:8px"></div>
 
-            <div class="flex-row">
-                <span>Date:</span>
-                <span id="r-date">23/02/2026</span>
-            </div>
+            <div class="flex-row"><span>Date:</span><span id="r-date">23/02/2026</span></div>
             <div class="flex-row">
                 <span>D&eacute;part:<span id="r-start">12:54</span></span>
                 <span>Arriv&eacute;e:<span id="r-end">13:52</span></span>
             </div>
-            <div class="flex-row">
-                <span>Distance:</span>
-                <span id="r-dist">64.8 km</span>
-            </div>
+            <div class="flex-row"><span>Distance:</span><span id="r-dist">64.8 km</span></div>
 
             <div>Lieu d&eacute;part:</div>
-            <div style="height:15px"></div>
+            <div style="height:4px"></div>
+            <div class="dots-line">...........................</div>
 
             <div>Lieu arriv&eacute;e:</div>
-            <div style="height:15px"></div>
+            <div style="height:4px"></div>
+            <div class="dots-line">...........................</div>
+            <div style="height:5px"></div>
 
-            <div class="flex-row">
-                <span>Prise en charge</span>
-                <span>2.94 &euro;</span>
-            </div>
+            <div class="flex-row"><span>Prise en charge</span><span>2.94 &euro;</span></div>
 
             <div class="total-ttc-row">
                 <span>TOTAL TTC</span>
@@ -180,92 +214,123 @@
             <div class="flex-row"><span>Total TVA 10.00%</span><span id="r-tva">12.29 &euro;</span></div>
             <div class="flex-row"><span>Total HT</span><span id="r-ht">122.95 &euro;</span></div>
 
-            <div style="height:15px"></div>
+            <div style="height:8px"></div>
 
-            <div>Le tarif minimum, suppl.<br>inclus, susceptible d'&ecirc;tre<br>per&ccedil;u pour une course est<br>fix&eacute; &agrave;&nbsp; 8.00 &euro;</div>
+            <div>Le tarif minimum, suppl.</div>
+            <div>inclus, susceptible d'&ecirc;tre</div>
+            <div>per&ccedil;u pour une course est</div>
+            <div>fix&eacute; &agrave;&nbsp; 8.00 &euro;</div>
 
-            <div style="height:10px"></div>
+            <div style="height:7px"></div>
 
             <div>Adresse de r&eacute;clamation:</div>
             <div>&nbsp;&nbsp;Prefecture des Yvelines</div>
             <div>Bureau de la reglementation</div>
-            <div>&nbsp;&nbsp;&nbsp;General 1rue jean</div>
-            <div>&nbsp;Houdon 78010 Versailles</div>
-            <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Cedex</div>
+            <div>&nbsp;&nbsp;&nbsp;&nbsp;General 1rue jean</div>
+            <div>&nbsp;&nbsp;Houdon 78010 Versailles</div>
+            <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Cedex</div>
 
-            <div style="height:10px"></div>
+            <div style="height:7px"></div>
 
             <div>Nom client:</div>
-            <div style="height:12px"></div>
-            <div class="dots-line">..........................................</div>
+            <div style="height:4px"></div>
+            <div class="dots-line">...........................</div>
 
-            <div style="height:8px"></div>
             <div>Adresse client:</div>
-            <div style="height:12px"></div>
-            <div class="dots-line">..........................................</div>
+            <div style="height:4px"></div>
+            <div class="dots-line">...........................</div>
 
-            <div style="height:8px"></div>
             <div>Signature client:</div>
-            
-            <div style="height:35px"></div>
+            <div style="height:22px"></div>
 
             <div class="center-text">Exemplaire chauffeur</div>
 
         </div>
     </div>
-
 </div>
 
 <script>
-    function formatDateFR(dateStr) {
-        if (!dateStr) return "";
-        const [year, month, day] = dateStr.split("-");
-        return `${day}/${month}/${year}`;
+    function formatDateFR(d) {
+        if (!d) return "";
+        const [y,m,j] = d.split("-");
+        return `${j}/${m}/${y}`;
     }
 
     function updatePreview() {
-        document.getElementById("r-date").innerText = formatDateFR(document.getElementById("date").value);
+        document.getElementById("r-date").innerText  = formatDateFR(document.getElementById("date").value);
         document.getElementById("r-start").innerText = document.getElementById("start").value;
-        document.getElementById("r-end").innerText = document.getElementById("end").value;
-        document.getElementById("r-dist").innerText = parseFloat(document.getElementById("distance").value).toFixed(1) + " km";
+        document.getElementById("r-end").innerText   = document.getElementById("end").value;
+        document.getElementById("r-dist").innerText  = parseFloat(document.getElementById("distance").value).toFixed(1) + " km";
 
         const ttc = parseFloat(document.getElementById("price").value) || 0;
-        const ht = ttc / 1.10;
+        const ht  = ttc / 1.10;
         const tva = ttc - ht;
 
         document.getElementById("r-ttc").innerText = ttc.toFixed(2) + " \u20AC";
         document.getElementById("r-tva").innerText = tva.toFixed(2) + " \u20AC";
         document.getElementById("r-ht").innerText  = ht.toFixed(2)  + " \u20AC";
+
+        fixZeros();
+    }
+
+    function fixZeros() {
+        const container = document.getElementById('receipt-container');
+        const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, null);
+        const nodes = [];
+        let n;
+        while ((n = walker.nextNode())) {
+            if (n.parentElement && n.parentElement.classList.contains('oz')) continue;
+            if (n.textContent.includes('0')) nodes.push(n);
+        }
+        nodes.forEach(tn => {
+            const parts = tn.textContent.split(/(0)/);
+            if (parts.length <= 1) return;
+            const frag = document.createDocumentFragment();
+            parts.forEach(p => {
+                if (p === '0') {
+                    const s = document.createElement('span');
+                    s.className = 'oz';
+                    s.textContent = '0';
+                    frag.appendChild(s);
+                } else if (p) {
+                    frag.appendChild(document.createTextNode(p));
+                }
+            });
+            tn.parentNode.replaceChild(frag, tn);
+        });
     }
 
     function generatePDF() {
         updatePreview();
-
         const dateStr = formatDateFR(document.getElementById("date").value);
-        const element = document.getElementById('receipt-container');
+        const el = document.getElementById('receipt-container');
 
-        // On enlève le design web pour la capture
-        const originalBorder = element.style.border;
-        element.style.border = "none";
+        el.classList.remove('preview-mode');
+        el.style.border    = "none";
+        el.style.boxShadow = "none";
+        el.style.margin    = "0";
 
-        const opt = {
-            margin:       0, // Zéro marge
-            filename:     `Ticket_${dateStr.replace(/\//g, "-")}.pdf`,
-            image:        { type: 'jpeg', quality: 1 },
-            html2canvas:  { 
-                scale: 3, // Résolution élevée pour une netteté parfaite à l'impression
+        // Auto-size PDF height to content
+        const pdfH = Math.ceil((el.scrollHeight / 96) * 25.4) + 8;
+
+        html2pdf().set({
+            margin:      [3, 0, 3, 0],
+            filename:    `Ticket_${dateStr.replace(/\//g,"-")}.pdf`,
+            image:       { type: 'jpeg', quality: 1 },
+            html2canvas: {
+                scale: 5,
                 useCORS: true,
-                backgroundColor: "#ffffff",
-                // Corrige le bug du PDF BLANC :
+                letterRendering: true,
+                backgroundColor: '#ffffff',
                 scrollX: 0,
                 scrollY: -window.scrollY
             },
-            jsPDF: { unit: 'mm', format: [58, 220], orientation: 'portrait' }
-        };
-
-        html2pdf().set(opt).from(element).save().then(() => {
-            // Restaure le design web
-            element.style.border = originalBorder;
+            jsPDF: { unit: 'mm', format: [58, pdfH], orientation: 'portrait' }
+        }).from(el).save().then(() => {
+            el.classList.add('preview-mode');
+            el.style.border    = "1px dashed #ccc";
+            el.style.boxShadow = "0 4px 6px rgba(0,0,0,0.1)";
+            el.style.margin    = "0 auto";
         });
     }
 
